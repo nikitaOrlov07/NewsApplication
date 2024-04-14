@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html lang ="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout=”http://www.ultraq.net.nz/thymeleaf/layout”
+      xmlns:sec="http://www/thymeleaf.org"
+      layout:decorate="~{layout}"
+>
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        .container {
+            max-width: 2000px; /* Увеличьте это значение для увеличения ширины строки */
+        }
+        nav[aria-label="Pagination"] {
+            ;
+        }
+    </style>
+
+</head>
+<body>
+<section layout:fragment="body" class="py-5">
+    <div class="container mt-5">
+        <div class="row">
+            <div class="col-md-4">
+                <h3 style="color: #000000;font-family: 'Arial', serif;">Categories</h3>
+                <ul class="list-group" style="width:400px ">
+                    <li class="list-group-item"><a th:href="@{/news/category/top}">Top</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/sport}">Sport</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/environment}">Enviroment</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/crime}">Crime</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/health}">Health</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/entertainment}">Entertainment</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/politics}">Politics</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/science}">Science</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/business}">Business</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/tourism}">Tourism</a></li>
+                   <li class="list-group-item"><a th:href="@{/news/category/world}">World</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/category/other}">Other</a></li>
+                </ul>
+                <br/>
+                <h3 style="color: #000000;font-family: 'Arial', serif;">Language</h3>
+                <ul class="list-group" style="width:400px ">
+                    <li class="list-group-item"><a th:href="@{/news/language/ukrainian}">Ukrainian</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/spanish}">Spanish</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/english}">English</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/turkish}">Turkish</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/japanese}">Japanese</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/vietnamese}">Vietnamese</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/korean}">Korean</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/indonesian}">Indonesian</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/italian}">Italian</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/german}">German</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/portuguese}">Portuguese</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/serbian}">Serbian</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/chinese}">Chinese</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/russian}">Russian</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/polish}">Polish</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/malay}">Malay</a></li>
+                    <li class="list-group-item"><a th:href="@{/news/language/french}">French</a></li>
+                </ul>
+            </div>
+
+            <div class="col-md-8">
+                <div>
+                    <form th:action ="@{/news/search}" class="form-inline my-2 my-lg-0 mb-3">
+                        <input name="query" class ="form-control mr-sm-2 mb-5" type="search" placeholder="Search news" aria-label="Search">
+                    </form>
+                </div>
+                <div class="row">
+                <!-- Thymeleaf for each loop to iterate over news_list -->
+                <div th:each="news : ${news.data}" class="col-lg-3"> <!-- Change this to col-md-3 for 4 cards in a row -->
+                    <div class="card mb-4" style="overflow: auto">
+                        <div class="card-body" style="height: 400px;width: 300px;">
+                            <h5 class="card-title" th:text="${news.title}"></h5>
+                            <p class="card-text">
+                                <strong>Published Date:</strong> <span th:text="${news.pubdate}"></span><br/>
+                                <strong>Categories:</strong>
+                                <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
+                                <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
+                                <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
+                            </p>
+                        </div>
+                        <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
+                    </div>
+                </div>
+                </div>
+            </div>
+            <!--Pagination-->
+            <nav aria-label="Pagination">
+                <ul class="pagination justify-content-center my-4">
+                    <li class="page-item" th:class="${news.pageNo == 0} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/news(pageNo=${news.pageNo - 1}, pageSize=${news.pageSize})}" tabindex="-1" aria-disabled="true">Newer</a>
+                    </li>
+                    <li th:each="pageNumber : ${#numbers.sequence(0, news.totalPages - 1)}" class="page-item" th:class="${pageNumber == news.pageNo} ? 'active' : ''">
+                        <a class="page-link" th:href="@{/news(pageNo=${pageNumber}, pageSize=${news.pageSize})}" th:text="${pageNumber + 1}"></a>
+                    </li>
+                    <li class="page-item" th:class="${news.pageNo == news.totalPages - 1} ? 'disabled' : ''">
+                        <a class="page-link" th:href="@{/news(pageNo=${news.pageNo + 1}, pageSize=${news.pageSize})}">Older</a>
+                    </li>
+                </ul>
+            </nav>
+
+        </div>
+    </div>
+</section>
+</body>
+</html>

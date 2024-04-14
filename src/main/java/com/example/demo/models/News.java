@@ -1,0 +1,33 @@
+package com.example.demo.models;
+
+import com.fasterxml.jackson.annotation.JsonProperty;
+import jakarta.persistence.*;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+
+import java.util.List;
+
+@Data
+@Builder
+@AllArgsConstructor
+@NoArgsConstructor
+@Entity
+public class News {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    Long id;
+    String imageUrl;
+    String videoUrl;
+    @ElementCollection
+    List<String> creator;
+    String description;
+    String title;
+    String language;
+    String pubdate;
+    @ElementCollection
+    List<String> country;
+    @ElementCollection
+    List<String> category;
+}

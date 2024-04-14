@@ -1,0 +1,99 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout=”http://www.ultraq.net.nz/thymeleaf/layout”
+      xmlns:sec="http://www/thymeleaf.org"
+      layout:decorate="~{layout}"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+
+            background-image: url("/assets/img/detailPage.jpg");
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-size: cover;
+        }
+
+    </style>
+
+    </style>
+
+    </style>
+</head>
+<body>
+<section layout:fragment="body">
+
+    <div class="col-md-12">
+
+        <div>
+            <div class="row" style="padding: 20px" >
+                <div class="col-md-4">
+                    <a href="#!">
+                        <img class="img-fluid" th:src="${#strings.isEmpty(news.imageUrl) ? '/assets/img/no_image.jpg' : news.imageUrl}" alt="News Photo" style="float: left; margin-right: 10px; margin-bottom: 10px; object-fit: cover; width: 800px; height: 700px;" />
+                    </a>
+                </div>
+                <div class="col-md-8">
+                    <div class="card-body">
+                        <strong><h2 class="card-title" th:text="${news.title}" style="font-family: 'Georgia', serif; color: #2c2c2c;"></h2></strong>
+                        <p class="card-text" th:text="${news.description}" style="font-family: 'Times New Roman', sans-serif; color: #0a0a0a;"></p>
+                        <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: #000000;"><strong>Creators:</strong>
+                            <span th:if="${#lists.isEmpty(news.creator)}">no specified</span>
+                            <span th:each="creator : ${news.creator}" th:text="${creator}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
+                        </h5>
+                        <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: #000000;"><strong>Categories:</strong>
+                            <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
+                            <span th:each="category : ${news.category}" th:text="${category}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
+                        </h5>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </br>
+
+        <hr th:if="${news.videoUrl}" style="border: 2px solid #ccc; border-color: #032738">
+
+        <script th:if="${news.videoUrl}" style="width:600px; height: 700px" >
+            window.onload = function() {
+                var video_url = "${news.videoUrl}"; // Замените на ваш URL
+                if(video_url) {
+                    var video = document.createElement('video');
+                    video.src = video_url;
+                    video.controls = true;
+                    document.body.appendChild(video);
+                }
+            }
+        </script>
+        </br>
+        <hr style="border: 2px solid #ccc; border-color: #032738">
+
+        <!-- Комментарии -->
+        <div class="col-lg-8" style="padding: 20px">
+            <h2 class="club-title" style="font-size: 2em; font-weight: bold;">Comments:</h2>
+            <!-- Форма для добавления комментария -->
+            <form th:action="@{/comments/{newsId}/save(newsId=${news.id})}" method="post">
+                <textarea name="text" placeholder="Напишите ваш комментарий здесь..." required rows="7" cols="80" style="resize: none;"></textarea>
+                <input type="hidden" th:value="${news.id}" name="club" />
+                <button type="submit" class="btn btn-secondary"style=" margin-bottom: 50px;">Send</button>
+            </form>
+            <div th:each="comment : ${comments}">
+                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                    <p class="comment-author" th:text="${comment.author}+':'"  style="font-size: 1.2em; font-weight: bold;"></p>
+                    <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5;"></p>
+                </div>
+            </div>
+
+        </div>
+    </div>
+    <div>
+
+    </div>
+
+</section>
+
+</body>
+</html>
