@@ -33,6 +33,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/register/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()
 
                         // Only administrator can get access to these web-pages
                         .requestMatchers(new AntPathRequestMatcher("/users-list")).hasAuthority("ADMIN") // hasAutority - checks users role

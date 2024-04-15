@@ -83,7 +83,20 @@ public class NewsServiceimpl implements NewsService {
     }
 
     @Override
-    public List<News> searchNews(String query) {
-        return newsRepository.searchNews(query);
+    public NewsPagination searchNews(String query,int pageNo,int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
+
+        NewsPagination newsPagination = new NewsPagination();
+        Page<News> news= newsRepository.searchNews(query,pageable);
+
+        List<News> newsList = news.getContent();
+
+        newsPagination.setData(newsList);
+        newsPagination.setPageNo(news.getNumber());
+        newsPagination.setPageSize(news.getSize());
+        newsPagination.setTotalElements(news.getTotalElements());
+        newsPagination.setTotalPages(news.getTotalPages());
+        newsPagination.setLast(news.isLast());
+        return newsPagination;
     }
 }

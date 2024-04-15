@@ -31,7 +31,8 @@ public class MainController{
                            @RequestParam(value="pageSize", defaultValue="6",required=false) int pageSize)
     {
         NewsPagination news_list =  newsService.getAllNews(pageNo,pageSize);
-        model.addAttribute("news", news_list);
+        model.addAttribute("news", news_list); // for just data
+
 
         return "home-page";
     }
@@ -68,10 +69,13 @@ public class MainController{
         return "language-news";
     }
     @GetMapping("/news/search")
-    public String searchClub(@RequestParam(value = "query") String query , Model model)
+    public String searchClub(@RequestParam(value = "query") String query , Model model,
+                             @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
+                             @RequestParam(value="pageSize", defaultValue="6",required=false) int pageSize)
     {
-        List<News> news= newsService.searchNews(query);
-        model.addAttribute("news_list",news);
+        NewsPagination news= newsService.searchNews(query,pageNo,pageSize);
+
+        model.addAttribute("news",news);
         return "home-page";
     }
 }

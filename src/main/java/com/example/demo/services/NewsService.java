@@ -14,5 +14,5 @@ public interface NewsService {
     List<News>  getNewsByCategory(String category);
     List<News> getNewsByLanguage(String language);
     NewsPagination getAllNews(int pageNo, int pageSize);
-    List<News> searchNews(String query);
+    NewsPagination searchNews(String query,int pageNo, int pageSize);
 }
