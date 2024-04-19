@@ -23,11 +23,11 @@
 
             <hr style="border: 2px solid #ccc; border-color: #032738">
             </br>
-            <div th:if="${news_list.isEmpty()}" class="alert alert-info">
+            <div th:if="${news_list.data.isEmpty()}" class="alert alert-info">
                 There are no news
             </div>
 
-            <div th:each="news : ${news_list}" class="col-lg-2"> <!-- Change this to col-md-3 for 4 cards in a row -->
+            <div th:each="news : ${news_list.data}" class="col-lg-2"> <!-- Change this to col-md-3 for 4 cards in a row -->
                 <div class="card mb-4" style="overflow: auto">
                     <div class="card-body" style="height: 400px;width: 300px;">
                         <h5 class="card-title" th:text="${news.title}"></h5>
@@ -43,6 +43,20 @@
                 </div>
             </div>
         </div>
+        <!--Pagination-->
+        <nav aria-label="Pagination">
+            <ul class="pagination justify-content-center my-4">
+                <li class="page-item" th:class="${news_list.pageNo == 0} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/news/language/{language}(pageNo=${news_list.pageNo - 1}, pageSize=${news_list.pageSize},language=${language})}" tabindex="-1" aria-disabled="true">Newer</a>
+                </li>
+                <li th:each="pageNumber : ${#numbers.sequence(0, news_list.totalPages - 1)}" class="page-item" th:class="${pageNumber == news_list.pageNo} ? 'active' : ''">
+                    <a class="page-link" th:href="@{/news/language/{language}(pageNo=${pageNumber}, pageSize=${news_list.pageSize},language=${language})}" th:text="${pageNumber + 1}"></a>
+                </li>
+                <li class="page-item" th:class="${news_list.pageNo == news_list.totalPages - 1} ? 'disabled' : ''">
+                    <a class="page-link" th:href="@{/news/language/{language}(pageNo=${news_list.pageNo + 1}, pageSize=${news_list.pageSize},language=${language})}">Older</a>
+                </li>
+            </ul>
+        </nav>
     </div>
 </section>
 </body>

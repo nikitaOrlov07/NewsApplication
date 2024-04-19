@@ -32,15 +32,16 @@
 
         <div>
             <div class="row" style="padding: 20px" >
-                <div class="col-md-4">
+                <div class="col-md-4" th:if="${!#strings.isEmpty(news.imageUrl)}">
                     <a href="#!">
-                        <img class="img-fluid" th:src="${#strings.isEmpty(news.imageUrl) ? '/assets/img/no_image.jpg' : news.imageUrl}" alt="News Photo" style="float: left; margin-right: 10px; margin-bottom: 10px; object-fit: cover; width: 800px; height: 700px;" />
+                        <img class="img-fluid" th:src="${news.imageUrl}" alt="News Photo" style="float: left; margin-right: 10px; margin-bottom: 10px; object-fit: cover; width: 800px; height: 700px;" />
                     </a>
                 </div>
+
                 <div class="col-md-8">
                     <div class="card-body">
                         <strong><h2 class="card-title" th:text="${news.title}" style="font-family: 'Georgia', serif; color: #2c2c2c;"></h2></strong>
-                        <p class="card-text" th:text="${news.description}" style="font-family: 'Times New Roman', sans-serif; color: #0a0a0a;"></p>
+                        <p class="card-text" th:text="${news.description}" style="font-family: 'Times New Roman', sans-serif; color: #0a0a0a; font-size: x-large"></p>
                         <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: #000000;"><strong>Creators:</strong>
                             <span th:if="${#lists.isEmpty(news.creator)}">no specified</span>
                             <span th:each="creator : ${news.creator}" th:text="${creator}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
@@ -50,27 +51,18 @@
                             <span th:each="category : ${news.category}" th:text="${category}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
                         </h5>
                     </div>
+
                 </div>
             </div>
         </div>
         </br>
 
-        <hr th:if="${news.videoUrl}" style="border: 2px solid #ccc; border-color: #032738">
+        <iframe controls width="300" th:src="${news.videoUrl}" style="width: 600px"></iframe>
 
-        <script th:if="${news.videoUrl}" style="width:600px; height: 700px" >
-            window.onload = function() {
-                var video_url = "${news.videoUrl}"; // Замените на ваш URL
-                if(video_url) {
-                    var video = document.createElement('video');
-                    video.src = video_url;
-                    video.controls = true;
-                    document.body.appendChild(video);
-                }
-            }
-        </script>
-        </br>
+
+    </div>
+    <div style="margin-top: 20px">
         <hr style="border: 2px solid #ccc; border-color: #032738">
-
         <!-- Комментарии -->
         <div class="col-lg-8" style="padding: 20px">
             <h2 class="club-title" style="font-size: 2em; font-weight: bold;">Comments:</h2>
@@ -88,8 +80,6 @@
             </div>
 
         </div>
-    </div>
-    <div>
 
     </div>
 

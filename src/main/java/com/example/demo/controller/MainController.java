@@ -8,6 +8,7 @@ import com.example.demo.repository.NewsRepository;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -28,7 +29,7 @@ public class MainController{
     @GetMapping("/news")
     public String mainPage(Model model,
                            @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
-                           @RequestParam(value="pageSize", defaultValue="6",required=false) int pageSize)
+                           @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize)
     {
         NewsPagination news_list =  newsService.getAllNews(pageNo,pageSize);
         model.addAttribute("news", news_list); // for just data
@@ -46,35 +47,44 @@ public class MainController{
         model.addAttribute("news", news);
         return "detail-page";
     }
-    // Category
-    @GetMapping("/news/category/{category}")
-    public String sportPage(Model model,@PathVariable("category") String category)
-    {
-        List<News> news_list = newsService.getNewsByCategory(category);
+    @GetMapping("/news/find") // this controller-method will handle two url
+    public String categoryAndLanguagePage(Model model,
+                                          @RequestParam(value ="language",required = false) String language,
+                                          @RequestParam(value ="category",required = false) String category,
+                                          @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
+                                          @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize) // "required=false"--> если переменная отсутствует в URL, то Spring MVC не сгенерирует исключение MissingPathVariableException
 
+
+    {
+        NewsPagination news_list = null ;
+        if(category != null && language!=null ) // if we have category and language
+        {
+            news_list =  newsService.getNewsByLanguageAndCategory(language, category, pageNo, pageSize);
+        }
+        else if(category == null && language!=null) // if we  have category , but have language
+        {
+         news_list = newsService.getNewsByLanguage(language,pageNo, pageSize);
+        }
+        else if(category != null && language == null) // if we don`t have language , but have category
+        {
+            news_list = newsService.getNewsByCategory(category,pageNo, pageSize);
+        }
+
+
+        model.addAttribute("language", language);
         model.addAttribute("category", category);
-        model.addAttribute("news_list", news_list);
-
-        return "category-news";
+        model.addAttribute("news", news_list);
+        return "home-page";
     }
-    // Language
-    @GetMapping("/news/language/{language}")
-    public String languagePage(Model model,@PathVariable("language") String language)
-    {
-        List<News> news_list = newsService.getNewsByLanguage(language);
 
-        model.addAttribute("category", language);
-        model.addAttribute("news_list", news_list);
 
-        return "language-news";
-    }
     @GetMapping("/news/search")
-    public String searchClub(@RequestParam(value = "query") String query , Model model,
+    public String searchClub(@RequestParam(value = "query" ) String query , Model model,
                              @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
-                             @RequestParam(value="pageSize", defaultValue="6",required=false) int pageSize)
+                             @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize)
     {
         NewsPagination news= newsService.searchNews(query,pageNo,pageSize);
-
+        model.addAttribute("query",query);
         model.addAttribute("news",news);
         return "home-page";
     }

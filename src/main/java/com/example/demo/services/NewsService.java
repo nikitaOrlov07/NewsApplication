@@ -10,9 +10,10 @@ public interface NewsService {
     List<ApiResponse> getNewsFromApi();
     News getNewsById(long id);
     void deleteAllFromDatabase();
-    void saveNewDataInDatabase(List<News> news);
-    List<News>  getNewsByCategory(String category);
-    List<News> getNewsByLanguage(String language);
+    void saveIfNotExists(List<News> newsList);
+    NewsPagination getNewsByCategory(String category,int pageNo,int pageSize);
+    NewsPagination getNewsByLanguage(String language,int pageNo,int pageSize) ;
     NewsPagination getAllNews(int pageNo, int pageSize);
     NewsPagination searchNews(String query,int pageNo, int pageSize);
+    NewsPagination getNewsByLanguageAndCategory(String language, String category,int pageNo, int pageSize);
 }

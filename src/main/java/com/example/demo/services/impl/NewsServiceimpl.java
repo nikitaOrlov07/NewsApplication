@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -45,27 +46,56 @@ public class NewsServiceimpl implements NewsService {
 
         newsRepository.deleteAll();
     }
-
     @Override
-    public void saveNewDataInDatabase(List<News> news) {
-        newsRepository.saveAll(news);
+    public void  saveIfNotExists(List<News> newsList) {
+        List<News> savedNews = new ArrayList<>();
+        for (News news : newsList) {
+            News existingNews = newsRepository.findByTitle(news.getTitle()).orElse(null); //if this news is already exist in the database -> write this news into a variable
+            if (existingNews == null) {
+                savedNews.add(newsRepository.save(news));
+            }
+        }
     }
 
     @Override
-    public List<News> getNewsByCategory(String category) {
-        return newsRepository.getNewsByCategory(category);
+    public NewsPagination getNewsByCategory(String category,int pageNo,int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
+        Page<News> news=newsRepository.getNewsByCategory(category,pageable);
+        List<News> newsList= news.getContent();
+
+        NewsPagination newsPagination = new NewsPagination();
+        newsPagination.setData(newsList);
+        newsPagination.setPageNo(news.getNumber());
+        newsPagination.setPageSize(news.getSize());
+        newsPagination.setTotalElements(news.getTotalElements());
+        newsPagination.setTotalPages(news.getTotalPages());
+        newsPagination.setLast(news.isLast());
+
+        return newsPagination;
     }
 
     @Override
-    public List<News> getNewsByLanguage(String language) {
-        return newsRepository.getNewsByLanguage(language);
+    public NewsPagination getNewsByLanguage(String language,int pageNo,int pageSize) {
+
+        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
+        Page<News> news=newsRepository.getNewsByLanguage(language,pageable);
+        List<News> newsList= news.getContent();
+
+        NewsPagination newsPagination = new NewsPagination();
+        newsPagination.setData(newsList);
+        newsPagination.setPageNo(news.getNumber());
+        newsPagination.setPageSize(news.getSize());
+        newsPagination.setTotalElements(news.getTotalElements());
+        newsPagination.setTotalPages(news.getTotalPages());
+        newsPagination.setLast(news.isLast());
+
+        return newsPagination;
     }
 
 
     @Override
     public NewsPagination getAllNews(int pageNo, int pageSize) {
-        deleteAllFromDatabase();
-        saveNewDataInDatabase(NewsMapper.apiResponseToNews(getNewsFromApi()));
+        saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
 
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);
@@ -97,6 +127,23 @@ public class NewsServiceimpl implements NewsService {
         newsPagination.setTotalElements(news.getTotalElements());
         newsPagination.setTotalPages(news.getTotalPages());
         newsPagination.setLast(news.isLast());
+        return newsPagination;
+    }
+
+    @Override
+    public NewsPagination getNewsByLanguageAndCategory(String language, String category, int pageNo, int pageSize) {
+        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
+        Page<News> news=newsRepository.findByLanguageAndCategory(language, category,pageable);
+        List<News> newsList= news.getContent();
+
+        NewsPagination newsPagination = new NewsPagination();
+        newsPagination.setData(newsList);
+        newsPagination.setPageNo(news.getNumber());
+        newsPagination.setPageSize(news.getSize());
+        newsPagination.setTotalElements(news.getTotalElements());
+        newsPagination.setTotalPages(news.getTotalPages());
+        newsPagination.setLast(news.isLast());
+
         return newsPagination;
     }
 }

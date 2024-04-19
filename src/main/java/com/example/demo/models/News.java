@@ -19,10 +19,13 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String imageUrl;
+    @Column(columnDefinition = "TEXT")
     String videoUrl;
     @ElementCollection
     List<String> creator;
+    @Column(columnDefinition = "TEXT") // databases column type for this attribute
     String description;
+    @Column(columnDefinition = "TEXT") // databases column type for this attribute
     String title;
     String language;
     String pubdate;
