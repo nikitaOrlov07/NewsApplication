@@ -23,10 +23,9 @@ public class SecurityConfig {
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.csrf(csrf -> csrf.disable()) // отключает защиту от межсайтовой подделки запросов (CSRF). В реальном приложении это может быть небезопасно, и вы должны включить защиту CSRF, если ваше приложение подвержено этому типу атак.
                 .authorizeRequests(authorize -> authorize
-                        .requestMatchers(new AntPathRequestMatcher("/clubs")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/clubs/{clubId}")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/events-coupons")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/home")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/news")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/news/{newsId}")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/news/find")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/comments")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/events/{eventId}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
@@ -61,6 +60,3 @@ public class SecurityConfig {
         builder.userDetailsService(userDetailsService).passwordEncoder(passwordEncoder());
     }
 }
-
-
-

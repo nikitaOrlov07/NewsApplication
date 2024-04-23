@@ -7,6 +7,8 @@ import com.example.demo.models.News;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.NewsRepository;
 import com.example.demo.services.NewsService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -24,6 +26,7 @@ public class NewsServiceimpl implements NewsService {
     NewsRepository newsRepository;
     @Autowired
     CommentRepository commentRepository;
+    private static final Logger logger = LoggerFactory.getLogger(NewsServiceimpl.class);
     @Override
     public List<ApiResponse> getNewsFromApi() {
         String url = "https://newsdata.io/api/1/news?apikey=pub_416437263d95d7cebaaae9cac7ade7143a7e1";
@@ -95,7 +98,15 @@ public class NewsServiceimpl implements NewsService {
 
     @Override
     public NewsPagination getAllNews(int pageNo, int pageSize) {
-        saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
+
+        // check for error
+        try {
+            saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
+        }
+        catch (Exception e)
+        {
+          logger.error("problem with api response");
+        }
 
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);

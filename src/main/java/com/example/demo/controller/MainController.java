@@ -7,6 +7,9 @@ import com.example.demo.models.News;
 import com.example.demo.repository.NewsRepository;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
+import com.example.demo.services.impl.NewsServiceimpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
@@ -25,14 +28,16 @@ public class MainController{
     private CommentService commentService;
     @Autowired
     private NewsRepository newsRepository;
+
      // https://newsdata.io/api-key - how many times we execute project
+     private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     @GetMapping("/news")
     public String mainPage(Model model,
                            @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
                            @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize)
     {
         NewsPagination news_list =  newsService.getAllNews(pageNo,pageSize);
-        model.addAttribute("news", news_list); // for just data
+        model.addAttribute("news", news_list);
 
 
         return "home-page";
@@ -63,19 +68,25 @@ public class MainController{
         }
         else if(category == null && language!=null) // if we  have category , but have language
         {
-         news_list = newsService.getNewsByLanguage(language,pageNo, pageSize);
+            news_list = newsService.getNewsByLanguage(language,pageNo, pageSize);
         }
         else if(category != null && language == null) // if we don`t have language , but have category
         {
             news_list = newsService.getNewsByCategory(category,pageNo, pageSize);
         }
 
+        if(news_list == null || news_list.getData().isEmpty()){
+            logger.error("News List is empty");
+        }
+        
+            logger.error("PageNo is "+news_list.getPageNo());
 
         model.addAttribute("language", language);
         model.addAttribute("category", category);
         model.addAttribute("news", news_list);
         return "home-page";
     }
+
 
 
     @GetMapping("/news/search")

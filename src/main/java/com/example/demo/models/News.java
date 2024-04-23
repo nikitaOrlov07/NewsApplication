@@ -18,6 +18,7 @@ public class News {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(columnDefinition = "TEXT")
     String imageUrl;
     @Column(columnDefinition = "TEXT")
     String videoUrl;

@@ -48,8 +48,8 @@
     </style>
 
 </head>
-<body  data-page-no="${news.pageNo}" data-page-size="${news.pageSize}" data-category="${category}" data-language="${language}" data-query="${query}">
-<section layout:fragment="body" class="py-5">
+<body  layout:fragment="body" th:data-page-no="${news.pageNo}" th:data-page-size="${news.pageSize}" th:data-category="${category}" th:data-language="${language}" th:data-query="${query}" th:total-pages="${news.totalPages}">
+<section class="py-5">
     <div class="container mt-5">
         <div class="row">
             <div class="col-md-4">
@@ -125,57 +125,62 @@
                     </form>
                 </div>
                 <div th:if="${news != null}">
-                <div class="row" >
-                <!-- Thymeleaf for each loop to iterate over news_list -->
+                    <div class="row" >
+                        <!-- Thymeleaf for each loop to iterate over news_list -->
 
-                    <div th:each="news : ${news.data}" class="col-lg-3"> <!-- Change this to col-md-3 for 4 cards in a row -->
-                    <div class="card mb-4" style="overflow: auto">
-                        <div class="card-body" style="height: 400px;width: 300px;">
-                            <h5 class="card-title" th:text="${news.title}"></h5>
-                            <p class="card-text">
-                                <strong>Published Date:</strong> <span th:text="${news.pubdate}"></span><br/>
-                                <strong>Categories:</strong>
-                                <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
-                                <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
-                                <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
-                            </p>
+                        <div th:each="news : ${news.data}" class="col-lg-3"> <!-- Change this to col-md-3 for 4 cards in a row -->
+                            <div class="card mb-4" style="overflow: auto">
+                                <div class="card-body" style="height: 400px;width: 300px;">
+                                    <h5 class="card-title" th:text="${news.title}"></h5>
+                                    <p class="card-text">
+                                        <strong>Published Date:</strong> <span th:text="${news.pubdate}"></span><br/>
+                                        <strong>Categories:</strong>
+                                        <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
+                                        <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
+                                        <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
+                                    </p>
+                                </div>
+                                <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
+                            </div>
                         </div>
-                        <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
+                        <div th:if="${news == null}">
+                            <h2>Нет новостей</h2>
+                        </div>
                     </div>
-                </div>
-                    <div th:if="${news == null}">
-                        <h2>Нет новостей</h2>
-                    </div>
-                </div>
 
 
-            <!--Pagination-->
-            <nav aria-label="Pagination">
-                <ul class="pagination justify-content-center my-4">
-                    <li class="page-item" th:class="${news.pageNo == 0} ? 'disabled' : ''">
-                        <a class="page-link" id="newerLink" tabindex="-1" aria-disabled="true">Newer</a>
-                    </li>
-                    <li th:each="pageNumber : ${#numbers.sequence(0, news.totalPages - 1)}" class="page-item" th:class="${pageNumber == news.pageNo} ? 'active' : ''">
-                        <a class="page-link page-number-link" th:text="${pageNumber + 1}"></a>
-                    </li>
-                    <li class="page-item" th:class="${news.pageNo == news.totalPages - 1} ? 'disabled' : ''">
-                        <a class="page-link" id="olderLink">Older</a>
-                    </li>
-                </ul>
-            </nav>
+                    <!--Pagination-->
+                    <nav aria-label="Pagination" th:if="${news != null && !#lists.isEmpty(news.data) }">
+                        <ul class="pagination justify-content-center my-4">
+                            <li class="page-item" th:class="${news.pageNo == 0} ? 'disabled' : ''">
+                                <a class="page-link" id="newerLink"  aria-disabled="true"><-</a> <!-- &larr; - "left arrow"-->
+                            </li>
+
+                            <li th:each="pageNumber : ${#numbers.sequence(0, news.totalPages - 1)}" class="page-item" th:class="${pageNumber == news.pageNo} ? 'active' : ''">
+                                <a th:if="${pageNumber <= news.pageNo + 5}" class="page-link page-number-link" th:text="${pageNumber+1}"></a>
+                                <a th:if="${pageNumber == news.totalPages}" class="page-link page-number-link" th:text="${pageNumber}"></a>
+                            </li>
+
+                            <li class="page-item" th:class="${news.pageNo == news.totalPages - 1} ? 'disabled' : ''">
+                                <a class="page-link" id="olderLink" >-></a> <!-- &rarr; - "right arrow"-->
+                            </li>
+                        </ul>
+                    </nav>
 
                     <script>
                         window.addEventListener('load', function() {
-                            var path = window.location.pathname; var body = document.querySelector('body');
-                            var pageNo = body.getAttribute('data-page-no') || 0;
-                            var pageSize = body.getAttribute('data-page-size') || 10;
-                            var category = '';var language = ''; var query = body.getAttribute('data-query') || '';
+                            let path = window.location.pathname; let body = document.querySelector('body');
+                            let pageNo = parseInt(body.getAttribute('data-page-no') || 1);
+                            let pageSize = parseInt(body.getAttribute('data-page-size') || 10);
+
+                            let totalPages=parseInt(body.getAttribute('total-pages'))
+                            let category = '';let language = ''; let query = body.getAttribute('data-query') || '';
                             // Если мы находимся на странице /news/find или /news/search, получаем выбранную категорию, язык и поисковый запрос из localStorage
                             if (path === '/news/find' || path === '/news/search') {
                                 category = localStorage.getItem('selectedCategory') || '';
                                 language = localStorage.getItem('selectedLanguage') || '';
-                                query = localStorage.getItem('selectedQuery') || ''; // Добавлено
-                                }
+                                query = localStorage.getItem('selectedQuery') || '';
+                            }
                             if (category) {
                                 category = "&category=" + category;
                             }
@@ -183,23 +188,46 @@
                                 language = "&language=" + language;
                             }
                             if (query) {
-                                query = "&query=" + query; // Добавлено
+                                query = "&query=" + query;
                             }
-                            document.getElementById('newerLink').href = path + "?pageNo=" + (pageNo - 1) + "&pageSize=" + pageSize + category + language + query;
-                            document.getElementById('olderLink').href = path + "?pageNo=" + (pageNo + 1) + "&pageSize=" + pageSize + category + language + query;
-                            var pageNumberLinks = document.getElementsByClassName('page-number-link');
-                            for (var i = 0; i < pageNumberLinks.length; i++) {
+                            let newPageNo = pageNo - 1;
+                            let oldPageNo = pageNo + 1;
+
+                            // for browser console
+                            console.info("Newer: "+ newPageNo);
+                            console.info("Older: "+ oldPageNo);
+                            console.info("Current page number: "+pageNo);
+                            console.info("PageSize: "+pageSize);
+                            console.info("Total pages: "+totalPages);
+
+                            document.getElementById('newerLink').addEventListener('click', function(e) {
+                                e.preventDefault();
+                                if (newPageNo >= 0) {
+                                    window.location.href = path + "?pageNo=" + newPageNo + "&pageSize=" + pageSize + category + language + query;
+                                    body.setAttribute('data-page-no', newPageNo.toString());
+                                }
+                            });
+
+                            document.getElementById('olderLink').addEventListener('click', function(e) {
+                                e.preventDefault();
+                                if(oldPageNo<=totalPages) {
+                                    window.location.href = path + "?pageNo=" + oldPageNo + "&pageSize=" + pageSize + category + language + query;
+                                    body.setAttribute('data-page-no', oldPageNo.toString());
+                                }
+                            });
+                            let pageNumberLinks = document.getElementsByClassName('page-number-link');
+                            for (let i = 0; i < pageNumberLinks.length; i++) {
                                 pageNumberLinks[i].href = path + "?pageNo=" + i + "&pageSize=" + pageSize + category + language + query;
                             }
 
                             document.getElementById('newsForm').addEventListener('submit', function(e) {
                                 e.preventDefault();
 
-                                var category = document.getElementById('category').value; var language = document.getElementById('language').value;
-                                var query = document.getElementById('query').value; // Предполагается, что у вас есть поле ввода с id='query'
+                                let category = document.getElementById('category').value; let language = document.getElementById('language').value;
+                                let query = document.getElementById('query').value; // Предполагается, что у вас есть поле ввода с id='query'
 
-                                var url = '/news/find';
-                                var params = [];
+                                let url = '/news/find';
+                                let params = [];
 
                                 // Сохраняем выбранную категорию, язык и поисковый запрос в localStorage
                                 localStorage.setItem('selectedCategory', category);
@@ -212,37 +240,32 @@
                                 }
 
                                 if (category !== '') {
-                                    params.push('category=' + encodeURIComponent(category));
+                                    params.push('&category=' + encodeURIComponent(category));
                                 }
                                 if (language !== '') {
-                                    params.push('language=' + encodeURIComponent(language));
+                                    params.push('&language=' + encodeURIComponent(language));
                                 }
                                 if (query !== '') {
-                                    params.push('query=' + encodeURIComponent(query)); // Добавлено
+                                    params.push('&query=' + encodeURIComponent(query)); // Добавлено
                                 }
 
                                 if (params.length > 0) {
                                     url += '?' + params.join('&');
                                 }
-                                var pageNumberLinks = document.getElementsByClassName('page-number-link');
-                                for (var i = 0; i < pageNumberLinks.length; i++) {
-                                    pageNumberLinks[i].href = path + "?pageNo=" + i + "&pageSize=" + pageSize + category + language + query;
-                                }
-
                                 window.location.href = url;
 
                             });
 
 
                             // Получаем выбранные категорию, язык и поисковый запрос из localStorage
-                            var selectedCategory = localStorage.getItem('selectedCategory');
-                            var selectedLanguage = localStorage.getItem('selectedLanguage');
-                            var selectedQuery = localStorage.getItem('selectedQuery'); // Добавлено
+                            let selectedCategory = localStorage.getItem('selectedCategory');
+                            let selectedLanguage = localStorage.getItem('selectedLanguage');
+                            let selectedQuery = localStorage.getItem('selectedQuery'); // Добавлено
 
                             // Находим элементы select и input на странице
-                            var categorySelect = document.getElementById('category');
-                            var languageSelect = document.getElementById('language');
-                            var queryInput = document.getElementById('query'); // Предполагается, что у вас есть поле ввода с id='query'
+                            let categorySelect = document.getElementById('category');
+                            let languageSelect = document.getElementById('language');
+                            let queryInput = document.getElementById('query'); // Предполагается, что у вас есть поле ввода с id='query'
 
                             // Устанавливаем выбранные значения для каждого select и input
                             if (selectedCategory) {
