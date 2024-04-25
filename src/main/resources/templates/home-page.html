@@ -111,6 +111,10 @@
                         <option value="vietnamese">Vietnamese</option>
                     </select>
 
+                    </br>
+
+                    <h3>Publication Date</h3>
+                    <input type="date" id="publicationDate" name="publicationDate">
 
                     <br/>
                     <input type="submit" value="Search" class="btn">
@@ -120,7 +124,7 @@
 
             <div class="col-md-8">
                 <div>
-                    <form th:action ="@{/news/search}" class="form-inline my-2 my-lg-0 mb-3">
+                    <form id ="searchForm" th:action ="@{/news/find}" class="form-inline my-2 my-lg-0 mb-3">
                         <input id="query" name="query" class ="form-control mr-sm-2 mb-5" type="search" placeholder="Search news" aria-label="Search">
                     </form>
                 </div>
@@ -169,27 +173,30 @@
 
                     <script>
                         window.addEventListener('load', function() {
-                            let path = window.location.pathname; let body = document.querySelector('body');
-                            let pageNo = parseInt(body.getAttribute('data-page-no') || 1);
+                            let path = window.location.pathname;
+                            let body = document.querySelector('body');
+                            let pageNo = parseInt(body.getAttribute('data-page-no') || 0);
                             let pageSize = parseInt(body.getAttribute('data-page-size') || 10);
 
                             let totalPages=parseInt(body.getAttribute('total-pages'))
-                            let category = '';let language = ''; let query = body.getAttribute('data-query') || '';
+                            let category = '';let language = ''; let query = '';
                             // Если мы находимся на странице /news/find или /news/search, получаем выбранную категорию, язык и поисковый запрос из localStorage
-                            if (path === '/news/find' || path === '/news/search') {
+                            if (path === '/news/find') {
                                 category = localStorage.getItem('selectedCategory') || '';
                                 language = localStorage.getItem('selectedLanguage') || '';
                                 query = localStorage.getItem('selectedQuery') || '';
                             }
-                            if (category) {
+
+                            if (category && category !== '') {
                                 category = "&category=" + category;
                             }
-                            if (language) {
+                            if (language && language !== '') {
                                 language = "&language=" + language;
                             }
-                            if (query) {
+                            if (query && query !== '') {
                                 query = "&query=" + query;
                             }
+
                             let newPageNo = pageNo - 1;
                             let oldPageNo = pageNo + 1;
 
@@ -223,7 +230,8 @@
                             document.getElementById('newsForm').addEventListener('submit', function(e) {
                                 e.preventDefault();
 
-                                let category = document.getElementById('category').value; let language = document.getElementById('language').value;
+                                let category = document.getElementById('category').value;
+                                let language = document.getElementById('language').value;
                                 let query = document.getElementById('query').value; // Предполагается, что у вас есть поле ввода с id='query'
 
                                 let url = '/news/find';
@@ -234,10 +242,6 @@
                                 localStorage.setItem('selectedLanguage', language);
                                 localStorage.setItem('selectedQuery', query);
 
-                                if (category === '' && language === '' && query === '') {
-                                    window.location.href = '/news';
-                                    return;
-                                }
 
                                 if (category !== '') {
                                     params.push('&category=' + encodeURIComponent(category));
@@ -249,13 +253,42 @@
                                     params.push('&query=' + encodeURIComponent(query)); // Добавлено
                                 }
 
+                                if (category === '' && language === '' && query === '') {
+                                    window.location.href = '/news';
+                                    return;
+                                }
+
                                 if (params.length > 0) {
                                     url += '?' + params.join('&');
                                 }
                                 window.location.href = url;
 
                             });
+                            document.getElementById('searchForm').addEventListener('submit', function(e) {
+                                e.preventDefault();
 
+                                let query = document.getElementById('query').value;
+
+                                let url = '/news/find';
+                                let params = [];
+
+
+                                localStorage.setItem('selectedQuery', query);
+
+
+                                if (query !== '') {
+                                    params.push('&query=' + encodeURIComponent(query)); // Добавлено
+                                }
+                                if (category === '' && language === '' && query === '') {
+                                    window.location.href = '/news';
+                                    return;
+                                }
+                                if (params.length > 0) {
+                                    url += '?' + params.join('&');
+                                }
+                                window.location.href = url;
+
+                            });
 
                             // Получаем выбранные категорию, язык и поисковый запрос из localStorage
                             let selectedCategory = localStorage.getItem('selectedCategory');

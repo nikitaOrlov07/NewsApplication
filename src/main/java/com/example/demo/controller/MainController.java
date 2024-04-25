@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import java.util.Date;
 import java.util.List;
 
 @Controller
@@ -56,6 +57,8 @@ public class MainController{
     public String categoryAndLanguagePage(Model model,
                                           @RequestParam(value ="language",required = false) String language,
                                           @RequestParam(value ="category",required = false) String category,
+                                          @RequestParam(value="query",required = false) String query,
+                                          @RequestParam(value="pubDate",required = false) Date date,
                                           @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
                                           @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize) // "required=false"--> если переменная отсутствует в URL, то Spring MVC не сгенерирует исключение MissingPathVariableException
 
@@ -75,6 +78,11 @@ public class MainController{
             news_list = newsService.getNewsByCategory(category,pageNo, pageSize);
         }
 
+        else if(query != null && language == null && category == null)
+        {
+            news_list=newsService.searchNews(query,pageNo,pageSize);
+        }
+        // search news only by title
         if(news_list == null || news_list.getData().isEmpty()){
             logger.error("News List is empty");
         }
@@ -84,19 +92,6 @@ public class MainController{
         model.addAttribute("language", language);
         model.addAttribute("category", category);
         model.addAttribute("news", news_list);
-        return "home-page";
-    }
-
-
-
-    @GetMapping("/news/search")
-    public String searchClub(@RequestParam(value = "query" ) String query , Model model,
-                             @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
-                             @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize)
-    {
-        NewsPagination news= newsService.searchNews(query,pageNo,pageSize);
-        model.addAttribute("query",query);
-        model.addAttribute("news",news);
         return "home-page";
     }
 }

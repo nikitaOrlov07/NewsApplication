@@ -7,10 +7,12 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
 public interface NewsRepository extends JpaRepository<News,Long> {
+// find news by different oprions
 Page<News> getNewsByCategory(String category,Pageable pageable);
 Page<News> getNewsByLanguage(String language,Pageable pageable);
 
@@ -18,5 +20,6 @@ Page<News> getNewsByLanguage(String language,Pageable pageable);
 Page<News> searchNews(String query, Pageable pageable);
 Optional<News> findByTitle(String title);
 Page<News> findByLanguageAndCategory(String language, String category,Pageable pageable);
+Page<News> findNewsByPubdate(Date date,Pageable pageable);
 }
 
