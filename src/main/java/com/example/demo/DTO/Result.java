@@ -1,5 +1,6 @@
 package com.example.demo.DTO;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import lombok.Data;
@@ -31,9 +32,12 @@ public class Result {
     String language;
 
     @JsonProperty("pubDate")
-    String pubdate;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
+    Date pubdate;
+
     @JsonProperty("country")
     List<String> country;
+
     @JsonProperty("category")
     List<String> category;
 

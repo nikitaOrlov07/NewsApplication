@@ -16,13 +16,13 @@ public interface NewsRepository extends JpaRepository<News,Long> {
        // have only one parametr
      Page<News> getNewsByCategory(String category,Pageable pageable);
      Page<News> getNewsByLanguage(String language,Pageable pageable);
-     Page<News> getNewsByPubdate(String date, Pageable pageable);
+     Page<News> getNewsByPubdate( Date date, Pageable pageable);
      // have two parameters
      Page<News >findByLanguageAndCategory(String language,String category,Pageable pageable);
-     Page<News> findByLanguageAndPubdate(String language,String pubDate,Pageable pageable);
-     Page<News> findByPubdateAndCategory(String pubDate, String category,Pageable pageable);
+     Page<News> findByLanguageAndPubdate(String language, Date pubDate,Pageable pageable);
+     Page<News> findByPubdateAndCategory( Date pubDate, String category,Pageable pageable);
      // have three parameters
-     Page<News> findByLanguageAndCategoryAndPubdate(String language, String category,String pubDate,Pageable pageable);
+     Page<News> findByLanguageAndCategoryAndPubdate(String language, String category, Date pubDate,Pageable pageable);
 
 @Query("Select c from News c WHERE c.title LIKE CONCAT('%', :query ,'%')")
 Page<News> searchNews(String query, Pageable pageable);

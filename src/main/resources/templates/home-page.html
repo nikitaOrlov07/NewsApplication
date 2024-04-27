@@ -190,16 +190,16 @@
                             }
 
                             if (category && category !== '') {
-                                category = "&category=" + category;
+                                category = "category=" + category;
                             }
                             if (language && language !== '') {
-                                language = "&language=" + language;
+                                language = "language=" + language;
                             }
                             if (query && query !== '') {
-                                query = "&query=" + query;
+                                query = "query=" + query;
                             }
                             if (pubDate && pubDate !== '') {
-                                pubDate = "&pubDate=" + pubDate;
+                                pubDate = "pubDate=" + pubDate;
                             }
 
 
@@ -241,7 +241,7 @@
                                 localStorage.setItem('selectedQuery', query);
                                 let category = document.getElementById('category').value;
                                 let language = document.getElementById('language').value;
-                                let pubDate = document.getElementById('pubDate').value;
+                                let pubDate = '';
 
                                 let url = '/news/find';
                                 let params = [];
@@ -252,13 +252,13 @@
                                 localStorage.setItem('selectedPubDate', pubDate);
 
                                 if (category !== '') {
-                                    params.push('&category=' + encodeURIComponent(category));
+                                    params.push('category=' + encodeURIComponent(category));
                                 }
                                 if (language !== '') {
-                                    params.push('&language=' + encodeURIComponent(language));
+                                    params.push('language=' + encodeURIComponent(language));
                                 }
                                 if (pubDate !== '') {
-                                    params.push('&pubDate=' + encodeURIComponent(pubDate));
+                                    params.push('pubDate=' + encodeURIComponent(pubDate));
                                 }
                                 if (category === '' && language === '' && query === '' && pubDate === '') {
                                     window.location.href = '/news';
@@ -276,7 +276,7 @@
                                 let params = [];
                                 localStorage.setItem('selectedQuery', query);
                                 if (query !== '') {
-                                    params.push('&query=' + encodeURIComponent(query)); // Добавлено
+                                    params.push('query=' + encodeURIComponent(query)); // Добавлено
                                 }
                                 if (category === '' && language === '' && query === '' && pubDate ==='') {
                                     window.location.href = '/news';
