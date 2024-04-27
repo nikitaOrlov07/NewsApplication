@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestParam;
 
-import java.util.Date;
+import java.sql.Date;
 import java.util.List;
 
 @Controller
@@ -27,9 +27,6 @@ public class MainController{
     private NewsService newsService;
     @Autowired
     private CommentService commentService;
-    @Autowired
-    private NewsRepository newsRepository;
-
      // https://newsdata.io/api-key - how many times we execute project
      private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     @GetMapping("/news")
@@ -39,7 +36,6 @@ public class MainController{
     {
         NewsPagination news_list =  newsService.getAllNews(pageNo,pageSize);
         model.addAttribute("news", news_list);
-
 
         return "home-page";
     }
@@ -53,45 +49,32 @@ public class MainController{
         model.addAttribute("news", news);
         return "detail-page";
     }
+
     @GetMapping("/news/find") // this controller-method will handle two url
-    public String categoryAndLanguagePage(Model model,
-                                          @RequestParam(value ="language",required = false) String language,
-                                          @RequestParam(value ="category",required = false) String category,
-                                          @RequestParam(value="query",required = false) String query,
-                                          @RequestParam(value="pubDate",required = false) Date date,
-                                          @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
-                                          @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize) // "required=false"--> если переменная отсутствует в URL, то Spring MVC не сгенерирует исключение MissingPathVariableException
+public String categoryAndLanguagePage(Model model,
+                                      @RequestParam(value ="language",required = false) String language,
+                                      @RequestParam(value ="category",required = false) String category,
+                                      @RequestParam(value="query",required = false) String query,
+                                      @RequestParam(value="pubDate",required = false) String date,
+                                      @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
+                                      @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize) // "required=false"--> если переменная отсутствует в URL, то Spring MVC не сгенерирует исключение MissingPathVariableException
+{
+
+    NewsPagination news_list = newsService.getNewsByLanguageAndCategoryAndQueryAndPubDate(language,category,date,query,pageNo,pageSize);
 
 
-    {
-        NewsPagination news_list = null ;
-        if(category != null && language!=null ) // if we have category and language
-        {
-            news_list =  newsService.getNewsByLanguageAndCategory(language, category, pageNo, pageSize);
-        }
-        else if(category == null && language!=null) // if we  have category , but have language
-        {
-            news_list = newsService.getNewsByLanguage(language,pageNo, pageSize);
-        }
-        else if(category != null && language == null) // if we don`t have language , but have category
-        {
-            news_list = newsService.getNewsByCategory(category,pageNo, pageSize);
-        }
-
-        else if(query != null && language == null && category == null)
-        {
-            news_list=newsService.searchNews(query,pageNo,pageSize);
-        }
-        // search news only by title
-        if(news_list == null || news_list.getData().isEmpty()){
-            logger.error("News List is empty");
-        }
-        
-            logger.error("PageNo is "+news_list.getPageNo());
-
-        model.addAttribute("language", language);
-        model.addAttribute("category", category);
-        model.addAttribute("news", news_list);
-        return "home-page";
+    if(news_list == null || news_list.getData().isEmpty()){
+        logger.error("News List is empty");
     }
+
+    logger.error("PageNo is "+news_list.getPageNo());
+    logger.info("Date is "+date + "Date class is: "+ date);
+
+    model.addAttribute("language", language);
+    model.addAttribute("category", category);
+    model.addAttribute("news", news_list);
+    model.addAttribute("pub-date", date);
+
+    return "home-page";
+}
 }

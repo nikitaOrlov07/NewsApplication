@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
+import java.sql.Date;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -45,11 +46,6 @@ public class NewsServiceimpl implements NewsService {
     }
 
     @Override
-    public void deleteAllFromDatabase() {
-
-        newsRepository.deleteAll();
-    }
-    @Override
     public void  saveIfNotExists(List<News> newsList) {
         List<News> savedNews = new ArrayList<>();
         for (News news : newsList) {
@@ -59,42 +55,6 @@ public class NewsServiceimpl implements NewsService {
             }
         }
     }
-
-    @Override
-    public NewsPagination getNewsByCategory(String category,int pageNo,int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
-        Page<News> news=newsRepository.getNewsByCategory(category,pageable);
-        List<News> newsList= news.getContent();
-
-        NewsPagination newsPagination = new NewsPagination();
-        newsPagination.setData(newsList);
-        newsPagination.setPageNo(news.getNumber());
-        newsPagination.setPageSize(news.getSize());
-        newsPagination.setTotalElements(news.getTotalElements());
-        newsPagination.setTotalPages(news.getTotalPages());
-        newsPagination.setLast(news.isLast());
-
-        return newsPagination;
-    }
-
-    @Override
-    public NewsPagination getNewsByLanguage(String language,int pageNo,int pageSize) {
-
-        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
-        Page<News> news=newsRepository.getNewsByLanguage(language,pageable);
-        List<News> newsList= news.getContent();
-
-        NewsPagination newsPagination = new NewsPagination();
-        newsPagination.setData(newsList);
-        newsPagination.setPageNo(news.getNumber());
-        newsPagination.setPageSize(news.getSize());
-        newsPagination.setTotalElements(news.getTotalElements());
-        newsPagination.setTotalPages(news.getTotalPages());
-        newsPagination.setLast(news.isLast());
-
-        return newsPagination;
-    }
-
 
     @Override
     public NewsPagination getAllNews(int pageNo, int pageSize) {
@@ -124,29 +84,33 @@ public class NewsServiceimpl implements NewsService {
     }
 
     @Override
-    public NewsPagination searchNews(String query,int pageNo,int pageSize) {
+    public NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category, String pubDate, String query, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
+        Page<News> news= null;
+        // There are no problems here
+        if(query != null) {
+            news = newsRepository.searchNews(query, pageable);
+        }
 
-        NewsPagination newsPagination = new NewsPagination();
-        Page<News> news= newsRepository.searchNews(query,pageable);
+        if(news == null || news.isEmpty()) {
+            if(category != null && language!=null && pubDate != null) {
+                news = newsRepository.findByLanguageAndCategoryAndPubdate(language, category, pubDate, pageable);
+            } else if(category != null && language!=null) {
+                news = newsRepository.findByLanguageAndCategory(language, category, pageable);
+            } else if(category != null && pubDate != null) {
+                news = newsRepository.findByPubdateAndCategory(pubDate, category, pageable);
+            } else if(language != null && pubDate != null) {
+                news = newsRepository.findByLanguageAndPubdate(language, pubDate, pageable);
+            } else if(category != null) {
+                news = newsRepository.getNewsByCategory(category, pageable);
+            } else if(language != null) {
+                news = newsRepository.getNewsByLanguage(language, pageable);
+            } else if(pubDate != null) {
+                news = newsRepository.getNewsByPubdate(pubDate, pageable);
+            }
+        }
 
-        List<News> newsList = news.getContent();
-
-        newsPagination.setData(newsList);
-        newsPagination.setPageNo(news.getNumber());
-        newsPagination.setPageSize(news.getSize());
-        newsPagination.setTotalElements(news.getTotalElements());
-        newsPagination.setTotalPages(news.getTotalPages());
-        newsPagination.setLast(news.isLast());
-        return newsPagination;
-    }
-
-    @Override
-    public NewsPagination getNewsByLanguageAndCategory(String language, String category, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
-        Page<News> news=newsRepository.findByLanguageAndCategory(language, category,pageable);
         List<News> newsList= news.getContent();
-
         NewsPagination newsPagination = new NewsPagination();
         newsPagination.setData(newsList);
         newsPagination.setPageNo(news.getNumber());
