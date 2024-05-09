@@ -33,7 +33,7 @@ public class Result {
 
     @JsonProperty("pubDate")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
-    Date pubdate;
+    String pubdate;
 
     @JsonProperty("country")
     List<String> country;

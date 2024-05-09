@@ -30,7 +30,7 @@ public class News {
     @Column(columnDefinition = "TEXT") // databases column type for this attribute
     String title;
     String language;
-    Date pubdate;
+    String pubdate;
     @ElementCollection
     List<String> country;
     @ElementCollection

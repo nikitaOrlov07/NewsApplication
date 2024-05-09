@@ -55,12 +55,12 @@ public String categoryAndLanguagePage(Model model,
                                       @RequestParam(value ="language",required = false) String language,
                                       @RequestParam(value ="category",required = false) String category,
                                       @RequestParam(value="query",required = false) String query,
-                                      @RequestParam(value="pubDate",required = false)  Date date,
+                                      @RequestParam(value="pubDate",required = false)  String date,
                                       @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
                                       @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize) // "required=false"--> если переменная отсутствует в URL, то Spring MVC не сгенерирует исключение MissingPathVariableException
 {
 
-    NewsPagination news_list = newsService.getNewsByLanguageAndCategoryAndQueryAndPubDate(language,category,date,query,pageNo,pageSize);
+    NewsPagination news_list = newsService.getNewsByLanguageAndCategoryAndQueryAndPubDate(language,category, date,query,pageNo,pageSize);
 
 
     if(news_list == null || news_list.getData().isEmpty()){

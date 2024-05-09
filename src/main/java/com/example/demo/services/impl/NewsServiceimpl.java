@@ -84,7 +84,7 @@ public class NewsServiceimpl implements NewsService {
     }
 
     @Override
-    public NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category,  Date pubDate, String query, int pageNo, int pageSize) {
+    public NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category,  String pubDate, String query, int pageNo, int pageSize) {
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news= null;
         // There are no problems here
@@ -92,6 +92,7 @@ public class NewsServiceimpl implements NewsService {
             news = newsRepository.searchNews(query, pageable);
         }
 
+        // if we don`t have query
         if(news == null || news.isEmpty()) {
             if(category != null && language!=null && pubDate != null) {
                 news = newsRepository.findByLanguageAndCategoryAndPubdate(language, category, pubDate, pageable);
