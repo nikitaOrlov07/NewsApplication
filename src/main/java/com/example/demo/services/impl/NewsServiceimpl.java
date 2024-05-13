@@ -111,7 +111,9 @@ public class NewsServiceimpl implements NewsService {
             }
         }
 
+
         List<News> newsList= news.getContent();
+
         NewsPagination newsPagination = new NewsPagination();
         newsPagination.setData(newsList);
         newsPagination.setPageNo(news.getNumber());

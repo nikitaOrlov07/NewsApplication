@@ -76,7 +76,7 @@ public String categoryAndLanguagePage(Model model,
     try {
         model.addAttribute("pub-date", date.toString());
     }catch (NullPointerException e){logger.error("pub-date is null");}
-
+    model.addAttribute("query",query);
     return "home-page";
 }
 }

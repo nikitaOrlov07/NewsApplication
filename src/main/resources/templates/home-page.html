@@ -45,6 +45,7 @@
         }
 
 
+
     </style>
 
 </head>
@@ -192,16 +193,16 @@
                             }
 
                             if (category && category !== '') {
-                                category = "category=" + category;
+                                category = "&category=" + category;
                             }
                             if (language && language !== '') {
-                                language = "language=" + language;
+                                language = "&language=" + language;
                             }
                             if (query && query !== '') {
-                                query = "query=" + query;
+                                query = "&query=" + query;
                             }
                             if (pubDate && pubDate !== '') {
-                                pubDate = "pubDate=" + pubDate;
+                                pubDate = "&pubDate=" + pubDate;
                             }
                             let newPageNo = pageNo - 1; // previous page
                             let oldPageNo = pageNo + 1; // next page
@@ -211,7 +212,6 @@
                             console.info("Current page number: " + pageNo);
                             console.info("PageSize: " + pageSize);
                             console.info("Total pages: " + totalPages);
-                            console.info("Query: " + query);
 
                             if(totalPages !== 0) {
                                 document.getElementById('newerLink').addEventListener('click', function (e) {
@@ -257,7 +257,8 @@
                                 if (pubDate !== '') {
                                     params.push('pubDate=' + encodeURIComponent(pubDate));
                                 }
-                                if (category === '' && language === '' && query === '' && pubDate === '') {
+                                if (category === '' && language === '' && pubDate === '') {
+                                    localStorage.setItem('selectedQuery','');
                                     window.location.href = '/news';
                                     return;
                                 }
@@ -273,9 +274,9 @@
                                 let params = [];
                                 localStorage.setItem('selectedQuery', query);
                                 if (query !== '') {
-                                    params.push('query=' + encodeURIComponent(query)); // Добавлено
+                                    params.push('query=' + encodeURIComponent(query));
                                 }
-                                if (category === '' && language === '' && query === '' && pubDate === '') {
+                                if (query === '') {
                                     window.location.href = '/news';
                                     return;
                                 }
@@ -289,16 +290,19 @@
                             let selectedCategory = localStorage.getItem('selectedCategory');
                             let selectedLanguage = localStorage.getItem('selectedLanguage');
                             let selectedPubDate = localStorage.getItem('selectedPubDate');
+                            let selectedQuery = localStorage.getItem('selectedQuery');
 
                             // Находим элементы select и input на странице
                             let categorySelect = document.getElementById('category');
                             let languageSelect = document.getElementById('language');
                             let pubDateSelect = document.getElementById('pubDate');
+                            let querySelect = document.getElementById('query');
 
                             // Устанавливаем выбранные значения для каждого select и input
                             if (selectedCategory) { categorySelect.value = selectedCategory; }
                             if (selectedLanguage) { languageSelect.value = selectedLanguage; }
                             if (selectedPubDate) { pubDateSelect.value = selectedPubDate; }
+                            if (selectedQuery) { querySelect.value = selectedQuery; }
 
                             // Получаем атрибут данных новостей
                             let newsData = JSON.parse(body.getAttribute("news-data") || "[]");
@@ -307,11 +311,12 @@
                             console.log("Selected Category:", selectedCategory);
                             console.log("Selected Language:", selectedLanguage);
                             console.log("Selected Publication Date:", selectedPubDate);
+                            console.log("Selected Query:", selectedQuery);
                             console.log("News Data:", newsData);
 
                             // Проверяем, пусты ли выбранные категория, язык и дата публикации, а также данные новостей
                             // условие на длину списка работает
-                            if (newsData.length.valueOf() == 0 && (selectedCategory == '' && selectedLanguage && selectedPubDate === '')) { // тут проблема в selectedCategory и selectedLanguage
+                            if (newsData.length.valueOf() == 0 && (selectedCategory == '' && selectedLanguage && selectedPubDate === '' && selectedQuery ==='')) { // тут проблема в selectedCategory и selectedLanguage
                                 console.log("redirect to /news");
                                 window.location.href = '/news';
                             }
