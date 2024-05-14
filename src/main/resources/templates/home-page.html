@@ -145,6 +145,7 @@
                                         <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
                                         <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
                                         <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
+                                        <strong>Views: </strong><span th:text="${news.pageVisitingCount}"/>
                                     </p>
                                 </div>
                                 <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
@@ -237,7 +238,7 @@
                             }
                             document.getElementById('newsForm').addEventListener('submit', function (e) {
                                 e.preventDefault();
-                                localStorage.setItem('selectedQuery', query);
+                                localStorage.setItem('selectedQuery', '');
                                 let category = document.getElementById('category').value;
                                 let language = document.getElementById('language').value;
                                 let pubDate = document.getElementById('pubDate').value;
@@ -258,7 +259,6 @@
                                     params.push('pubDate=' + encodeURIComponent(pubDate));
                                 }
                                 if (category === '' && language === '' && pubDate === '') {
-                                    localStorage.setItem('selectedQuery','');
                                     window.location.href = '/news';
                                     return;
                                 }

@@ -124,4 +124,11 @@ public class NewsServiceimpl implements NewsService {
 
         return newsPagination;
     }
+
+    @Override
+    public void updateNews(News news) {
+        newsRepository.save(news);
+    }
+
+
 }

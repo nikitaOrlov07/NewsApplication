@@ -50,6 +50,9 @@
                             <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
                             <span th:each="category : ${news.category}" th:text="${category}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
                         </h5>
+                        <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: #000000;"><strong>Views:</strong>
+                            <span th:text="${news.pageVisitingCount}" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
+                        </h5>
                     </div>
 
                 </div>

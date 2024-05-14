@@ -35,4 +35,6 @@ public class News {
     List<String> country;
     @ElementCollection
     List<String> category;
+    int pageVisitingCount = 0;
+
 }

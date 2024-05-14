@@ -16,6 +16,7 @@ import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import java.sql.Date;
@@ -40,10 +41,12 @@ public class MainController{
         return "home-page";
     }
     //Detail page
-    @GetMapping("/news/{newsId}")
+    @GetMapping ("/news/{newsId}")
     public String detailPage(@PathVariable("newsId") long newsId, Model model)
     {
         News news = newsService.getNewsById(newsId);
+        news.setPageVisitingCount(news.getPageVisitingCount()+1);
+        newsService.updateNews(news);// update views-counter
         List<Comment> comments_list = commentService.getComments(newsId);
         model.addAttribute("comments", comments_list);
         model.addAttribute("news", news);

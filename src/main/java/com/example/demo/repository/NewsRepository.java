@@ -24,10 +24,12 @@ public interface NewsRepository extends JpaRepository<News,Long> {
      // have three parameters
      Page<News> findByLanguageAndCategoryAndPubdate(String language, String category, String pubDate,Pageable pageable);
 
-@Query("Select c from News c WHERE c.title LIKE CONCAT('%', :query ,'%')")
-Page<News> searchNews(String query, Pageable pageable);
-Optional<News> findByTitle(String title);
+     @Query("Select c from News c WHERE c.title LIKE CONCAT('%', :query ,'%')")
+     Page<News> searchNews(String query, Pageable pageable);
+     Optional<News> findByTitle(String title);
 
+     // for finding top news by views count
+     Page<News> findTop10ByOrderByPageVisitingCountDesc(Pageable pageable); //desc = descending sort = "по убыванию"
 
 }
 
