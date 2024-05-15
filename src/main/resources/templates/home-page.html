@@ -49,7 +49,7 @@
     </style>
 
 </head>
-<body  layout:fragment="body" th:data-page-no="${news.pageNo}" th:data-page-size="${news.pageSize}" th:data-category="${category}" th:data-language="${language}" th:data-query="${query}" th:total-pages="${news.totalPages}" th:news-data="${news.data}">
+<body  layout:fragment="body" th:data-page-no="${news.pageNo}" th:data-page-size="${news.pageSize}" th:data-category="${category}" th:data-language="${language}" th:data-query="${query}" th:total-pages="${news.totalPages}" th:news-data="${news.data}" th:news-sort="${sort}">
 <section class="py-5">
     <div class="container mt-5">
         <div class="row">
@@ -73,6 +73,7 @@
                     </select>
 
                     <br/>
+
                     <h3>Language</h3>
                     <select name="language" id="language" style="width:400px; height: 40px">
                         <option value="">No Specify</option>
@@ -112,10 +113,19 @@
                         <option value="vietnamese">Vietnamese</option>
                     </select>
 
-                    </br>
+                    <br/>
 
                     <h3>Publication Date</h3>
                     <input id="pubDate" type="date"  name="pubDate"> <!--Name must be the same as name is @RequestedParam in Controller-->
+
+                    </br>
+
+                    <h3>Sort By</h3>
+                    <select name="sort" id="sort" style="width:400px; height: 40px">
+                        <option value="">No Specify</option>
+                        <option value="views">Views</option>
+                    </select>
+
                     <br/>
                     <input type="submit" value="Search" class="btn">
                 </form>
@@ -177,22 +187,22 @@
                     </th:block>
 
                     <script>
-
                             let path = window.location.pathname;
                             let body = document.querySelector('body');
                             let pageNo = parseInt(body.getAttribute('data-page-no') || 0);
                             let pageSize = parseInt(body.getAttribute('data-page-size') || 10);
                             let totalPages = parseInt(body.getAttribute('total-pages'));
                             // search parameters
-                            let category = ''; let language = ''; let query = ''; let pubDate = '';
+                            let category = ''; let language = ''; let query = ''; let pubDate = ''; let sort = '';
                             // Если мы находимся на странице /news/find или /news/search, получаем выбранную категорию, язык и поисковый запрос из localStorage
                             if (path === '/news/find') {
                                 category = localStorage.getItem('selectedCategory') || '';
                                 language = localStorage.getItem('selectedLanguage') || '';
                                 pubDate = localStorage.getItem('selectedPubDate') || '';
                                 query = localStorage.getItem('selectedQuery') || '';
+                                sort = localStorage.getItem('selectedSort') || '';
                             }
-
+                            console.log("sort",sort);
                             if (category && category !== '') {
                                 category = "&category=" + category;
                             }
@@ -204,6 +214,9 @@
                             }
                             if (pubDate && pubDate !== '') {
                                 pubDate = "&pubDate=" + pubDate;
+                            }
+                            if(sort && sort !== '') {
+                                sort = "&sort=" + sort;
                             }
                             let newPageNo = pageNo - 1; // previous page
                             let oldPageNo = pageNo + 1; // next page
@@ -218,7 +231,7 @@
                                 document.getElementById('newerLink').addEventListener('click', function (e) {
                                     e.preventDefault();
                                     if (newPageNo >= 0) {
-                                        window.location.href = path + "?pageNo=" + newPageNo + "&pageSize=" + pageSize + category + language + query + pubDate;
+                                        window.location.href = path + "?pageNo=" + newPageNo + "&pageSize=" + pageSize + category + language + query + pubDate + sort;
                                         body.setAttribute('data-page-no', newPageNo.toString());
                                     }
                                 });
@@ -226,14 +239,14 @@
                                 document.getElementById('olderLink').addEventListener('click', function (e) {
                                     e.preventDefault();
                                     if (oldPageNo <= totalPages) {
-                                        window.location.href = path + "?pageNo=" + oldPageNo + "&pageSize=" + pageSize + category + language + query + pubDate;
+                                        window.location.href = path + "?pageNo=" + oldPageNo + "&pageSize=" + pageSize + category + language + query + pubDate + sort;
                                         body.setAttribute('data-page-no', oldPageNo.toString());
                                     }
                                 });
                                 let pageNumberLinks = document.getElementsByClassName('page-number-link');
                                 for (let i = 0; i < pageNumberLinks.length; i++) {
                                     let pageNumber = parseInt(pageNumberLinks[i].innerText); // take numbers inside "pagination buttons "
-                                    pageNumberLinks[i].href = path + "?pageNo=" + (pageNumber - 1) + "&pageSize=" + pageSize + category + language + query + pubDate;
+                                    pageNumberLinks[i].href = path + "?pageNo=" + (pageNumber - 1) + "&pageSize=" + pageSize + category + language + query + pubDate + sort;
                                 }
                             }
                             document.getElementById('newsForm').addEventListener('submit', function (e) {
@@ -242,12 +255,14 @@
                                 let category = document.getElementById('category').value;
                                 let language = document.getElementById('language').value;
                                 let pubDate = document.getElementById('pubDate').value;
+                                let sort = document.getElementById('sort').value;
                                 let url = '/news/find'; let params = [];
 
                                 // Сохраняем выбранную категорию, язык и поисковый запрос в localStorage
                                 localStorage.setItem('selectedCategory', category);
                                 localStorage.setItem('selectedLanguage', language);
                                 localStorage.setItem('selectedPubDate', pubDate);
+                                localStorage.setItem('selectedSort',sort);
 
                                 if (category !== '') {
                                     params.push('category=' + encodeURIComponent(category));
@@ -258,7 +273,10 @@
                                 if (pubDate !== '') {
                                     params.push('pubDate=' + encodeURIComponent(pubDate));
                                 }
-                                if (category === '' && language === '' && pubDate === '') {
+                                if (sort !== '') {
+                                    params.push('sort=' + encodeURIComponent(sort));
+                                }
+                                if (category === '' && language === '' && pubDate === '' && sort === '') {
                                     window.location.href = '/news';
                                     return;
                                 }
@@ -291,18 +309,21 @@
                             let selectedLanguage = localStorage.getItem('selectedLanguage');
                             let selectedPubDate = localStorage.getItem('selectedPubDate');
                             let selectedQuery = localStorage.getItem('selectedQuery');
+                            let selectedSort = localStorage.getItem('selectedSort');
 
                             // Находим элементы select и input на странице
                             let categorySelect = document.getElementById('category');
                             let languageSelect = document.getElementById('language');
                             let pubDateSelect = document.getElementById('pubDate');
                             let querySelect = document.getElementById('query');
+                            let sortSelect = document.getElementById('sort');
 
                             // Устанавливаем выбранные значения для каждого select и input
                             if (selectedCategory) { categorySelect.value = selectedCategory; }
                             if (selectedLanguage) { languageSelect.value = selectedLanguage; }
                             if (selectedPubDate) { pubDateSelect.value = selectedPubDate; }
                             if (selectedQuery) { querySelect.value = selectedQuery; }
+                            if (selectedSort) { sortSelect.value = selectedSort; }
 
                             // Получаем атрибут данных новостей
                             let newsData = JSON.parse(body.getAttribute("news-data") || "[]");
@@ -316,7 +337,7 @@
 
                             // Проверяем, пусты ли выбранные категория, язык и дата публикации, а также данные новостей
                             // условие на длину списка работает
-                            if (newsData.length.valueOf() == 0 && (selectedCategory == '' && selectedLanguage && selectedPubDate === '' && selectedQuery ==='')) { // тут проблема в selectedCategory и selectedLanguage
+                            if (newsData.length.valueOf() == 0 && (selectedCategory == '' && selectedLanguage && selectedPubDate === '' && selectedQuery ==='' && selectedSort ==='')) { // тут проблема в selectedCategory и selectedLanguage
                                 console.log("redirect to /news");
                                 window.location.href = '/news';
                             }

@@ -13,7 +13,7 @@ public interface NewsService {
 
     void saveIfNotExists(List<News> newsList);
     NewsPagination getAllNews(int pageNo, int pageSize);
-    NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category,  String pubDate, String query, int pageNo, int pageSize);
+    NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category,  String pubDate, String query, String sort, int pageNo, int pageSize);
     void updateNews(News news);
 
 }
