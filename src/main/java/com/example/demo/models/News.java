@@ -36,5 +36,6 @@ public class News {
     @ElementCollection
     List<String> category;
     int pageVisitingCount = 0;
-
+    int likes = 0;
+    int dislikes = 0;
 }

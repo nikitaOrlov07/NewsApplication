@@ -52,9 +52,8 @@ public class MainController{
         model.addAttribute("news", news);
         return "detail-page";
     }
-
-    @GetMapping("/news/find") // this controller-method will handle two url
-public String categoryAndLanguagePage(Model model,
+    @GetMapping("/news/find")
+    public String categoryAndLanguagePage(Model model,
                                       @RequestParam(value ="language",required = false) String language,
                                       @RequestParam(value ="category",required = false) String category,
                                       @RequestParam(value="query",required = false) String query,
@@ -62,7 +61,7 @@ public String categoryAndLanguagePage(Model model,
                                       @RequestParam(value="pageNo", defaultValue="0",required=false) int pageNo,
                                       @RequestParam(value="pageSize", defaultValue="12",required=false) int pageSize,
                                       @RequestParam(value="sort",required = false) String sort ) // "required=false"--> если переменная отсутствует в URL, то Spring MVC не сгенерирует исключение MissingPathVariableException
-{
+   {
 
     NewsPagination news_list = newsService.getNewsByLanguageAndCategoryAndQueryAndPubDate(language,category, date,query,sort,pageNo,pageSize);
 
