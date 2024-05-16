@@ -13,6 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
@@ -45,6 +46,7 @@ public class NewsServiceimpl implements NewsService {
         return newsRepository.findById(id).get();
     }
 
+    // method for saving non-existed news from Api
     @Override
     public void  saveIfNotExists(List<News> newsList) {
         List<News> savedNews = new ArrayList<>();
@@ -59,7 +61,7 @@ public class NewsServiceimpl implements NewsService {
     @Override
     public NewsPagination getAllNews(int pageNo, int pageSize) {
 
-        // check for error
+        // check for error with saving non-existed data that I got from Api
         try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
         }
@@ -85,19 +87,21 @@ public class NewsServiceimpl implements NewsService {
 
     @Override
     public NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category,  String pubDate, String query,String sort, int pageNo, int pageSize) {
-        Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news= null;
 
-        if(sort!=null && sort.equals("views"))
-        {
-            news = newsRepository.findAllByOrderByPageVisitingCountDesc(pageable);
+        Sort sort_object = Sort.unsorted(); // object, which is used to define the sort order of data when executing database queries. In this line we create object without sorting
+
+        if (sort != null && sort.equals("views")) {
+            sort_object = Sort.by(Sort.Direction.DESC, "pageVisitingCount"); // if sorts = views , we override Sort object and add sorting by "pageVisitingCount"  variable
         }
+
+        Pageable pageable = PageRequest.of(pageNo, pageSize, sort_object);// define information about pagination
         if(query != null) {
             news = newsRepository.searchNews(query, pageable);
         }
 
         // if we don`t have query
-        if(news == null || news.isEmpty()) {
+        if((news == null || news.isEmpty()) && (category != null || language != null || pubDate != null )) {
             if(category != null && language!=null && pubDate != null) {
                 news = newsRepository.findByLanguageAndCategoryAndPubdate(language, category, pubDate, pageable);
             } else if(category != null && language!=null) {
@@ -115,6 +119,13 @@ public class NewsServiceimpl implements NewsService {
             }
         }
 
+        // if query , category, language, pubDate --> were empty --> we use only sorting
+        if(news == null)
+        {
+          pageable = PageRequest.of(pageNo,pageSize);
+          if(sort!=null && sort.equals("views"))
+              news = newsRepository.findAllByOrderByPageVisitingCountDesc(pageable);
+        }
 
         List<News> newsList= news.getContent();
 
