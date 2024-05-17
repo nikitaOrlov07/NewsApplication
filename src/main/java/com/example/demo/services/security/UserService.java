@@ -16,6 +16,7 @@ public interface UserService {
     List<UserEntity> findAllUsers();
 
     UserEntity findById(Long userId);
+    void actionNews(String action,News news);
 
-
+    void updateNewsList(News news);
 }

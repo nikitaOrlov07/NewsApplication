@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-
+import com.example.demo.models.News;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,6 +23,7 @@ public class UserEntity {
     private String town;
     private Long phoneNumber;
     private int roleId; //{0,1}
+
     @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_role",joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},
@@ -37,5 +38,31 @@ public class UserEntity {
         }
         return false;
     }
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_seen_news",
+            joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},
+            inverseJoinColumns ={@JoinColumn(name = "news_id", referencedColumnName = "id")}
+    )
+    private List<News> seenNews = new ArrayList<>();
+
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_liked_news",
+            joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},
+            inverseJoinColumns ={@JoinColumn(name = "news_id", referencedColumnName = "id")}
+    )
+    private List<News> likedNews = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_disliked_news",
+            joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},
+            inverseJoinColumns ={@JoinColumn(name = "news_id", referencedColumnName = "id")}
+    )
+    private List<News> dislikedNews = new ArrayList<>();
+
 
 }

@@ -18,12 +18,8 @@
             min-height: 100vh;
             background-size: cover;
         }
-
     </style>
 
-    </style>
-
-    </style>
 </head>
 <body>
 <section layout:fragment="body">
@@ -54,9 +50,13 @@
                             <span th:text="${news.pageVisitingCount}" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
                         </h5>
                         <strong>Likes: </strong><span th:text="${news.likes}"/>
-                        <button style="width: 50px; height: 50px;">👍</button>
-                        <strong>DisLikes: </strong><span th:text="${news.dislikes}"/>
-                        <button style="width: 50px; height: 50px;">👎</button>
+                        <strong>Dislikes: </strong><span th:text="${news.dislikes}"/>
+
+                        <form th:action="@{/news/actions/{newsId}(newsId=${news.id})}" method="post">
+                            <button name="interaction" value="like" type="submit" style="width: 50px; height: 50px;">👍</button>
+                            <button name="interaction" value="dislike" type="submit" style="width: 50px; height: 50px;">👎</button>
+                        </form>
+
                     </div>
 
                 </div>

@@ -1,6 +1,7 @@
 package com.example.demo.services.security;
 
 import com.example.demo.models.News;
+import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.security.UserService;
 import com.example.demo.DTO.security.RegistrationDto;
 import com.example.demo.models.Comment;
@@ -62,6 +63,38 @@ public class UserServiceimpl implements UserService {
     public UserEntity findById(Long userId) {
         Optional<UserEntity> optionalUser = userRepository.findById(userId);
         return optionalUser.orElse(null);
+    }
+
+    @Override
+    public void updateNewsList(News news) {
+        String userName = SecurityUtil.getSessionUser();
+        UserEntity user =  userRepository.findByUsername(userName);
+
+        if (!user.getSeenNews().contains(news)) {
+            user.getSeenNews().add(news);
+            userRepository.save(user);
+        }
+    }
+
+    @Override
+    public void actionNews(String action, News news) {
+        if(action != null && !action.isEmpty())
+        {
+            String userName = SecurityUtil.getSessionUser();
+            UserEntity user =  userRepository.findByUsername(userName);
+           if(action.equals("like") && !user.getLikedNews().contains(news))
+           {
+               news.setLikes(news.getLikes() + 1);
+               user.getLikedNews().add(news);
+               userRepository.save(user);
+           }
+           if(action.equals("dislike") && !user.getDislikedNews().contains(news))
+           {
+               news.setDislikes(news.getDislikes() + 1);
+               user.getDislikedNews().add(news);
+               userRepository.save(user);
+           }
+        }
     }
 
     @Override

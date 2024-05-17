@@ -5,9 +5,11 @@ import com.example.demo.mappers.NewsMapper;
 import com.example.demo.models.Comment;
 import com.example.demo.models.News;
 import com.example.demo.repository.NewsRepository;
+import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
 import com.example.demo.services.impl.NewsServiceimpl;
+import com.example.demo.services.security.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -28,6 +30,9 @@ public class MainController{
     private NewsService newsService;
     @Autowired
     private CommentService commentService;
+    @Autowired
+    private UserService userService;
+
      // https://newsdata.io/api-key - how many times we execute project
      private static final Logger logger = LoggerFactory.getLogger(MainController.class);
     @GetMapping("/news")
@@ -45,8 +50,12 @@ public class MainController{
     public String detailPage(@PathVariable("newsId") long newsId, Model model)
     {
         News news = newsService.getNewsById(newsId);
-        news.setPageVisitingCount(news.getPageVisitingCount()+1);
-        newsService.updateNews(news);// update views-counter
+        if(SecurityUtil.getSessionUser() != null && !SecurityUtil.getSessionUser().isEmpty()) { // if user are logged in
+            userService.updateNewsList(news);
+            newsService.updateNews(news);// update views-counter
+        }
+
+
         List<Comment> comments_list = commentService.getComments(newsId);
         model.addAttribute("comments", comments_list);
         model.addAttribute("news", news);

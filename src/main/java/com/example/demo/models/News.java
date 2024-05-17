@@ -27,10 +27,12 @@ public class News {
     List<String> creator;
     @Column(columnDefinition = "TEXT") // databases column type for this attribute
     String description;
+
     @Column(columnDefinition = "TEXT") // databases column type for this attribute
     String title;
     String language;
     String pubdate;
+
     @ElementCollection
     List<String> country;
     @ElementCollection
