@@ -1,5 +1,6 @@
 package com.example.demo.services.security;
 
+import com.example.demo.controller.CommentController;
 import com.example.demo.models.News;
 import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.security.UserService;
@@ -11,6 +12,8 @@ import com.example.demo.repository.NewsRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.security.RoleRepository;
 import com.example.demo.repository.security.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -23,6 +26,7 @@ import java.util.Optional;
 public class UserServiceimpl implements UserService {
     private UserRepository userRepository; private RoleRepository roleRepository;  // implements methods from repositories
     private PasswordEncoder passwordEncoder; private NewsRepository newsRepository; private CommentRepository commentRepository;
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceimpl.class);
 
     @Autowired
     public UserServiceimpl(UserRepository userRepository, RoleRepository roleRepository,PasswordEncoder passwordEncoder, NewsRepository newsRepository, CommentRepository commentRepository) {
@@ -82,17 +86,59 @@ public class UserServiceimpl implements UserService {
         {
             String userName = SecurityUtil.getSessionUser();
             UserEntity user =  userRepository.findByUsername(userName);
-           if(action.equals("like") && !user.getLikedNews().contains(news))
+           if(action.equals("like"))
            {
-               news.setLikes(news.getLikes() + 1);
-               user.getLikedNews().add(news);
-               userRepository.save(user);
+               if(!user.getLikedNews().contains(news) && !user.getDislikedNews().contains(news)) {     // if user did not like this news
+                   news.setLikes(news.getLikes() + 1);
+                   logger.info("User did not like this news");
+                   user.getLikedNews().add(news);
+                   userRepository.save(user);
+               }
+               else if(user.getLikedNews().contains(news) && !user.getDislikedNews().contains(news)) { // if user liked this news before
+                   news.setLikes(news.getLikes() - 1);
+                   logger.info("User liked this news");
+                   user.getLikedNews().remove(news);
+                   userRepository.save(user);
+               }
+               else if(user.getDislikedNews().contains(news))                                          // if user disliked this news before
+               {
+                   // remove this news from disliked news
+                   news.setDislikes(news.getDislikes() - 1);
+                   user.getDislikedNews().remove(news);
+                   logger.info("remove user dislike");
+                   // Add this news to liked news
+                   news.setLikes(news.getLikes() + 1);
+                   user.getLikedNews().add(news);
+                   logger.info("add user like");
+                   userRepository.save(user);
+               }
            }
-           if(action.equals("dislike") && !user.getDislikedNews().contains(news))
+           else if(action.equals("dislike"))
            {
-               news.setDislikes(news.getDislikes() + 1);
-               user.getDislikedNews().add(news);
-               userRepository.save(user);
+
+               if(!user.getDislikedNews().contains(news) && !user.getLikedNews().contains(news)) {
+                   news.setDislikes(news.getDislikes() + 1);
+                   user.getDislikedNews().add(news);
+                   logger.info("User did not dislike this news");
+                   userRepository.save(user);
+               }
+               else if(user.getDislikedNews().contains(news) && !user.getLikedNews().contains(news))
+               {
+                   news.setDislikes(news.getDislikes() - 1);
+                   user.getDislikedNews().remove(news);
+                   logger.info("User disliked this news");
+                   userRepository.save(user);
+               }
+               else if(user.getLikedNews().contains(news)) // if user liked this news этот метод не происходит
+               {
+                   news.setLikes(news.getLikes() - 1);
+                   user.getLikedNews().remove(news);
+                   logger.info("remove user like");
+                   news.setDislikes(news.getDislikes() + 1);
+                   user.getDislikedNews().add(news);
+                   logger.info("add user dislike");
+                   userRepository.save(user);
+               }
            }
         }
     }
