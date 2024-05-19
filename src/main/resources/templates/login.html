@@ -62,6 +62,9 @@
             <div th:if="${param.error}" class="alert alert-danger">
                 Invalid username and password.
             </div>
+            <div th:if="${loginError}" class="alert alert-info">
+                You must login
+            </div>
             <div th:if="${param.logout}" class="alert alert-success">
                 You have been logged out.</div>
             <div class="login-form reg-Text">

@@ -30,6 +30,6 @@ public interface NewsRepository extends JpaRepository<News,Long> {
 
      // for finding top news by views count
      Page<News> findAllByOrderByPageVisitingCountDesc(Pageable pageable); //desc = descending sort = "по убыванию"
-
+     Page<News> findAllByOrderByLikesDesc(Pageable pageable);
 }
 

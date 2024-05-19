@@ -27,12 +27,12 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/news/{newsId}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/news/find")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/comments")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/events/{eventId}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/register/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}")).permitAll()
 
                         // Only administrator can get access to these web-pages
                         .requestMatchers(new AntPathRequestMatcher("/users-list")).hasAuthority("ADMIN") // hasAutority - checks users role

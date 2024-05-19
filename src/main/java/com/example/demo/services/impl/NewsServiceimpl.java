@@ -94,8 +94,14 @@ public class NewsServiceimpl implements NewsService {
 
         Sort sort_object = Sort.unsorted(); // object, which is used to define the sort order of data when executing database queries. In this line we create object without sorting
 
-        if (sort != null && sort.equals("views")) {
-            sort_object = Sort.by(Sort.Direction.DESC, "pageVisitingCount"); // if sorts = views , we override Sort object and add sorting by "pageVisitingCount"  variable
+        if (sort != null) {
+            if( sort.equals("views")) {
+                sort_object = Sort.by(Sort.Direction.DESC, "pageVisitingCount"); // if sorts = views , we override Sort object and add sorting by "pageVisitingCount"  variable
+            }
+            else if( sort.equals("likes"))
+            {
+                sort_object=Sort.by(Sort.Direction.DESC, "likes");
+            }
         }
 
         Pageable pageable = PageRequest.of(pageNo, pageSize, sort_object);// define information about pagination
@@ -126,8 +132,16 @@ public class NewsServiceimpl implements NewsService {
         if(news == null)
         {
           pageable = PageRequest.of(pageNo,pageSize);
-          if(sort!=null && sort.equals("views"))
-              news = newsRepository.findAllByOrderByPageVisitingCountDesc(pageable);
+          if(sort!=null )
+          {
+              if(sort.equals("views"))
+              {
+                  news = newsRepository.findAllByOrderByPageVisitingCountDesc(pageable);
+              } else if (sort.equals("likes")) {
+                  news= newsRepository.findAllByOrderByLikesDesc(pageable);
+              }
+          }
+
         }
 
         List<News> newsList= news.getContent();

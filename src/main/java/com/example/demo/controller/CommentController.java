@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import com.example.demo.models.News;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
 public class CommentController {
@@ -38,8 +39,14 @@ public class CommentController {
     // like and dislike for news
     @PostMapping("/news/actions/{newsId}")
     public String likeLogic(@PathVariable("newsId") Long newsId,
-                            @RequestParam(value ="interaction") String interaction) {
-        UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
+                            @RequestParam(value ="interaction") String interaction,
+                            RedirectAttributes redirectAttributes) {
+        String username = SecurityUtil.getSessionUser();
+        if(username == null) // if the user is not authorized
+        {
+            redirectAttributes.addFlashAttribute("loginError", "You must login");
+            return "redirect:/login";
+        }
         News news = newsService.getNewsById(newsId);
         if(interaction != null) {
             switch (interaction) {
