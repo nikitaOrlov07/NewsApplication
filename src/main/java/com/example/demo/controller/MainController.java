@@ -58,6 +58,7 @@ public class MainController{
         }
 
 
+
         List<Comment> comments_list = commentService.getComments(newsId);
         model.addAttribute("comments", comments_list);
         model.addAttribute("news", news);

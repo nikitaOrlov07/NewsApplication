@@ -12,11 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.*;
 import com.example.demo.models.News;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
@@ -41,7 +38,7 @@ public class CommentController {
 
     @PostMapping("/comments/{newsId}/delete/{commentId}")
     public String deleteComment(@PathVariable("commentId") Long commentId, @PathVariable("newsId") Long newsId) {
-        // Take comment grom database
+        // Take comment grom database and delete it with service method
         Comment comment = repository2.findCommentById(commentId);
         commentService.deleteComment(comment,newsId);
 
@@ -51,7 +48,7 @@ public class CommentController {
 
     // like and dislike for news
     @PostMapping("/news/actions/{newsId}")
-    public String likeLogic(@PathVariable("newsId") Long newsId,
+    public String actionLogic(@PathVariable("newsId") Long newsId,
                             @RequestParam(value ="interaction") String interaction,
                             RedirectAttributes redirectAttributes) {
         String username = SecurityUtil.getSessionUser();
@@ -64,10 +61,10 @@ public class CommentController {
         if(interaction != null) {
             switch (interaction) {
                 case "like":
-                    userService.actionNews("like",news);
+                    userService.actionNews("like",news,"news",null);
                     break;
                 case "dislike":
-                    userService.actionNews("dislike",news);
+                    userService.actionNews("dislike",news,"news",null);
                     break;
             }
         }
@@ -78,5 +75,32 @@ public class CommentController {
     }
 
     // like and dislike for comments
+    @PostMapping("/news/actions/{newsId}/comments/{commentId}")
+    public String commentActionLogic(@PathVariable("newsId") Long newsId, @PathVariable("commentId") Long commentId,@RequestParam(value ="interaction") String interaction,
+                                     RedirectAttributes redirectAttributes) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null) // if the user is not authorized
+        {
+            redirectAttributes.addFlashAttribute("loginError", "You must login");
+            return "redirect:/login";
+        }
+
+        Comment comment = commentService.findCommentById(commentId);
+        if (interaction != null) {
+            switch (interaction) {
+                case "like":
+                    userService.actionNews("like", null,"comment",comment);
+                    break;
+                case "dislike":
+                    userService.actionNews("dislike", null,"comment",comment);
+                    break;
+            }
+        }
+        else {
+            logger.error("Interaction variable is null");
+        }
+
+        return "redirect:/news/" + newsId; // redirect to news detail page)
+    }
 
 }

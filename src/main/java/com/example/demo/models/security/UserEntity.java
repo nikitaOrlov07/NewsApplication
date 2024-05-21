@@ -1,6 +1,7 @@
 package com.example.demo.models.security;
 
 
+import com.example.demo.models.Comment;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -47,7 +48,7 @@ public class UserEntity {
     )
     private List<News> seenNews = new ArrayList<>();
 
-
+    // actions with news
     @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_liked_news",
@@ -63,5 +64,23 @@ public class UserEntity {
             inverseJoinColumns ={@JoinColumn(name = "news_id", referencedColumnName = "id")}
     )
     private List<News> dislikedNews = new ArrayList<>();
+
+    // actions with comments
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_liked_comments",
+            joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},
+            inverseJoinColumns ={@JoinColumn(name = "comment_id", referencedColumnName = "id")}
+    )
+    private List<Comment> likedComments = new ArrayList<>();
+
+    @ManyToMany(fetch = FetchType.LAZY, cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "users_disliked_comments",
+            joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},
+            inverseJoinColumns ={@JoinColumn(name = "comment_id", referencedColumnName = "id")}
+    )
+    private List<Comment> dislikedComments = new ArrayList<>();
 
 }

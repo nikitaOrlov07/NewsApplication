@@ -11,4 +11,5 @@ public interface CommentService {
     List<Comment> getComments(Long clubId);
 
     void deleteComment (Comment comment, Long newsId);
+    Comment findCommentById(Long commentId);
 }

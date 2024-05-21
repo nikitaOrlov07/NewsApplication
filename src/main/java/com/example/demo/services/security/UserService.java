@@ -2,6 +2,7 @@ package com.example.demo.services.security;
 
 
 import com.example.demo.DTO.security.RegistrationDto;
+import com.example.demo.models.Comment;
 import com.example.demo.models.News;
 import com.example.demo.models.security.UserEntity;
 
@@ -16,7 +17,8 @@ public interface UserService {
     List<UserEntity> findAllUsers();
 
     UserEntity findById(Long userId);
-    void actionNews(String action,News news);
+    void actionNews(String action, News news, String type, Comment comment);
 
     void updateNewsList(News news);
+
 }

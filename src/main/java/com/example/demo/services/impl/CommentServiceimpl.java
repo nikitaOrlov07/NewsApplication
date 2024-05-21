@@ -51,4 +51,9 @@ public class CommentServiceimpl implements CommentService {
         newsService.updateNews(news);
         commentRepository.delete(comment);
     }
+
+    @Override
+    public Comment findCommentById(Long commentId) {
+        return commentRepository.findCommentById(commentId);
+    }
 }

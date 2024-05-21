@@ -85,11 +85,17 @@
             </form>
             <!--List of all comments-->
             <div th:each="comment : ${comments}">
-                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
+                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;position: relative">
                     <p class="comment-author" th:text="${comment.author}+':'"  style="font-size: 1.2em; font-weight: bold;"></p>
                     <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5;"></p>
                     <form th:if="${user.id == comment.author_id or user.hasAdminRole()}" th:action="@{/comments/{newsId}/delete/{commentId}(newsId=${news.id}, commentId=${comment.id})}" method="post">
-                        <button type="submit" class="btn btn-danger">Delete</button>
+                        <button type="submit" class="btn btn-danger" style="position: absolute; bottom: 0; right: 0;" >Delete</button>
+                    </form>
+                    <strong>Likes: </strong><span th:text="${comment.likes}"/>
+                    <strong>Dislikes: </strong><span th:text="${comment.dislikes}"/>
+                    <form th:if ="${user != null}" th:action="@{/news/actions/{newsId}/comments/{commentId}(newsId=${news.id},commentId=${comment.id})}" method="post">
+                        <button name="interaction" value="like" type="submit" style="width: 50px; height: 50px;">👍</button>
+                        <button name="interaction" value="dislike" type="submit" style="width: 50px; height: 50px;">👎</button>
                     </form>
                 </div>
             </div>

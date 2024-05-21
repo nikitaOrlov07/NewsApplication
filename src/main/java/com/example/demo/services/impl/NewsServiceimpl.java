@@ -63,13 +63,15 @@ public class NewsServiceimpl implements NewsService {
 
         // check for error with saving non-existed data that I got from Api
 
-         try {
+        /* try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
         }
         catch (Exception e)
         {
           logger.error("problem with api response");
         }
+
+         */
 
 
 

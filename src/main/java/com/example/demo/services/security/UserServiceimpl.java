@@ -81,11 +81,13 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
-    public void actionNews(String action, News news) {
+    public void actionNews(String action, News news, String type,Comment comment) {
         if(action != null && !action.isEmpty())
         {
             String userName = SecurityUtil.getSessionUser();
             UserEntity user =  userRepository.findByUsername(userName);
+            if(type.equals("news") || news != null)
+            {
            if(action.equals("like"))
            {
                if(!user.getLikedNews().contains(news) && !user.getDislikedNews().contains(news)) {     // if user did not like this news
@@ -140,6 +142,67 @@ public class UserServiceimpl implements UserService {
                    userRepository.save(user);
                }
            }
+        }
+
+            // the same but for comments
+            else if(type.equals("comment"))
+            {
+                if(action.equals("like"))
+                {
+                    if(!user.getLikedComments().contains(comment) && !user.getDislikedComments().contains(comment)) {     // if user did not like this news +
+                        comment.setLikes(comment.getLikes() + 1);
+                        logger.info("User did not like this comment");
+                        user.getLikedComments().add(comment);
+                        userRepository.save(user);
+                    }
+                    else if(user.getLikedComments().contains(comment) && !user.getDislikedComments().contains(comment)) { // if user liked this news before
+                        comment.setLikes(comment.getLikes() - 1);
+                        logger.info("User liked this news");
+                        user.getLikedComments().remove(comment);
+                        userRepository.save(user);
+                    }
+                    else if(user.getDislikedComments().contains(comment))                                          // if user disliked this news before
+                    {
+                        // remove this news from disliked news
+                        comment.setDislikes(comment.getDislikes() - 1);
+                        user.getDislikedComments().remove(comment);
+                        logger.info("remove user dislike");
+                        // Add this news to liked news
+                        comment.setLikes(comment.getLikes() + 1);
+                        user.getLikedComments().add(comment);
+                        logger.info("add user like");
+                        userRepository.save(user);
+                    }
+                }
+                else if(action.equals("dislike"))
+                {
+
+                    if(!user.getDislikedComments().contains(comment) && !user.getLikedComments().contains(comment)) {
+                        comment.setDislikes(comment.getDislikes() + 1);
+                        user.getDislikedComments().add(comment);
+                        logger.info("User did not dislike this news");
+                        userRepository.save(user);
+                    }
+                    else if(user.getDislikedComments().contains(comment) && !user.getLikedComments().contains(comment))
+                    {
+                        comment.setDislikes(comment.getDislikes() - 1);
+                        user.getDislikedComments().remove(comment);
+                        logger.info("User disliked this news");
+                        userRepository.save(user);
+                    }
+                    else if(user.getLikedComments().contains(comment)) // if user liked this news этот метод не происходит
+                    {
+                        comment.setLikes(comment.getLikes() - 1);
+                        user.getLikedComments().remove(comment);
+                        logger.info("remove user like");
+                        comment.setDislikes(comment.getDislikes() + 1);
+                        user.getDislikedComments().add(comment);
+                        logger.info("add user dislike");
+                        userRepository.save(user);
+                    }
+                }
+
+            }
         }
     }
 

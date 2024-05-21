@@ -34,6 +34,7 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}")).permitAll()
 
+
                         // Only administrator can get access to these web-pages
                         .requestMatchers(new AntPathRequestMatcher("/users-list")).hasAuthority("ADMIN") // hasAutority - checks users role
                         .requestMatchers(new AntPathRequestMatcher("/users/{userId}/delete")).hasAuthority("ADMIN")

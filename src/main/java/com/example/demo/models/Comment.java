@@ -17,4 +17,9 @@ public class Comment {
     @JoinColumn(name = "news_id")
     private News news;
 
+    // likes and dislikes
+    int likes = 0;
+    int dislikes = 0;
+
+
 }
