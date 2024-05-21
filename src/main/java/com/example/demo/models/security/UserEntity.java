@@ -30,7 +30,7 @@ public class UserEntity {
             inverseJoinColumns ={@JoinColumn(name = "role_id", referencedColumnName = "id")}
     )// с помощью этой аннотации Spring сам создаст Join- таблицу
     private List<RoleEntity> roles = new ArrayList<>(); // список ролей для данного пользователя. Каждый пользователь может иметь список ролей.
-    public boolean hasAdminRole(List<RoleEntity> roles) {
+    public boolean hasAdminRole() {
         for (RoleEntity role : roles) {
             if (role.getName().equals("ADMIN")) {
                 return true;
@@ -63,6 +63,5 @@ public class UserEntity {
             inverseJoinColumns ={@JoinColumn(name = "news_id", referencedColumnName = "id")}
     )
     private List<News> dislikedNews = new ArrayList<>();
-
 
 }

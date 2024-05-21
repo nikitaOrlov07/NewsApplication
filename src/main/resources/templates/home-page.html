@@ -103,7 +103,6 @@
                         <option value="romanian">Romanian</option>
                         <option value="russian">Russian</option>
                         <option value="serbian">Serbian</option>
-                        <option value="slovak">Slovak</option>
                         <option value="slovenian">Slovenian</option>
                         <option value="spanish">Spanish</option>
                         <option value="swedish">Swedish</option>
@@ -111,6 +110,7 @@
                         <option value="turkish">Turkish</option>
                         <option value="ukrainian">Ukrainian</option>
                         <option value="vietnamese">Vietnamese</option>
+                        <option value="slovak">Slovak</option>
                     </select>
 
                     <br/>
@@ -125,6 +125,7 @@
                         <option value="">No Specify</option>
                         <option value="views">Views</option>
                         <option value="likes">Likes</option>
+                        <option value="comments">Comments</option>
                     </select>
                     <br/>
                     <input type="submit" value="Search" class="btn">
@@ -342,7 +343,7 @@
 
                             // Проверяем, пусты ли выбранные категория, язык и дата публикации, а также данные новостей
                             // условие на длину списка работает
-                            if (newsData.length.valueOf() == 0 && (selectedCategory == '' && selectedLanguage && selectedPubDate === '' && selectedQuery ==='' && selectedSort ==='')) { // тут проблема в selectedCategory и selectedLanguage
+                            if (newsData.length.valueOf() == 0 && (selectedCategory === '' && selectedLanguage === '' && selectedPubDate === '' && selectedQuery ==='' && selectedSort ==='')) { // тут проблема в selectedCategory и selectedLanguage
                                 console.log("redirect to /news");
                                 window.location.href = '/news';
                             }

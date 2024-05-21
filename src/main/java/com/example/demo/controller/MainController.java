@@ -4,6 +4,7 @@ import com.example.demo.DTO.NewsPagination;
 import com.example.demo.mappers.NewsMapper;
 import com.example.demo.models.Comment;
 import com.example.demo.models.News;
+import com.example.demo.models.security.UserEntity;
 import com.example.demo.repository.NewsRepository;
 import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.CommentService;
@@ -49,6 +50,7 @@ public class MainController{
     @GetMapping ("/news/{newsId}")
     public String detailPage(@PathVariable("newsId") long newsId, Model model)
     {
+        UserEntity  user = userService.findByUsername(SecurityUtil.getSessionUser());
         News news = newsService.getNewsById(newsId);
         if(SecurityUtil.getSessionUser() != null && !SecurityUtil.getSessionUser().isEmpty()) { // if user are logged in
             userService.updateNewsList(news);
@@ -59,6 +61,7 @@ public class MainController{
         List<Comment> comments_list = commentService.getComments(newsId);
         model.addAttribute("comments", comments_list);
         model.addAttribute("news", news);
+        model.addAttribute("user",user);
         return "detail-page";
     }
     @GetMapping("/news/find")
@@ -87,7 +90,8 @@ public class MainController{
     model.addAttribute("news", news_list);
     try {
         model.addAttribute("pub-date", date.toString());
-    }catch (NullPointerException e){logger.error("pub-date is null");}
+    }catch (NullPointerException e)
+    {logger.error("pub-date is null");}
     model.addAttribute("query",query);
     model.addAttribute("sort",sort);
     return "home-page";

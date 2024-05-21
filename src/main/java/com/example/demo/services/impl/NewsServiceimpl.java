@@ -63,7 +63,7 @@ public class NewsServiceimpl implements NewsService {
 
         // check for error with saving non-existed data that I got from Api
 
-        /*try {
+         try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
         }
         catch (Exception e)
@@ -72,7 +72,8 @@ public class NewsServiceimpl implements NewsService {
         }
 
 
-         */
+
+
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);
         List<News> newsList= news.getContent();
@@ -101,6 +102,10 @@ public class NewsServiceimpl implements NewsService {
             else if( sort.equals("likes"))
             {
                 sort_object=Sort.by(Sort.Direction.DESC, "likes");
+            }
+            else if( sort.equals("comments"))
+            {
+                sort_object=Sort.by(Sort.Direction.DESC, "commentsCount");
             }
         }
 
@@ -132,16 +137,15 @@ public class NewsServiceimpl implements NewsService {
         if(news == null)
         {
           pageable = PageRequest.of(pageNo,pageSize);
-          if(sort!=null )
-          {
-              if(sort.equals("views"))
-              {
+          if(sort!=null ) {
+              if (sort.equals("views")) {
                   news = newsRepository.findAllByOrderByPageVisitingCountDesc(pageable);
               } else if (sort.equals("likes")) {
-                  news= newsRepository.findAllByOrderByLikesDesc(pageable);
+                  news = newsRepository.findAllByOrderByLikesDesc(pageable);
+              } else if (sort.equals("comments")) {
+                  news= newsRepository.findAllByOrderByCommentsCountDesc(pageable);
               }
           }
-
         }
 
         List<News> newsList= news.getContent();

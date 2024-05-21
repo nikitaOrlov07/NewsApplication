@@ -2,6 +2,7 @@ package com.example.demo.services;
 
 import com.example.demo.DTO.ApiResponse;
 import com.example.demo.DTO.NewsPagination;
+import com.example.demo.models.Comment;
 import com.example.demo.models.News;
 
 import java.sql.Date;

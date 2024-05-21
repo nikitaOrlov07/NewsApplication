@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 
+import com.example.demo.models.Comment;
 import com.example.demo.models.News;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -31,5 +32,7 @@ public interface NewsRepository extends JpaRepository<News,Long> {
      // for finding top news by views count
      Page<News> findAllByOrderByPageVisitingCountDesc(Pageable pageable); //desc = descending sort = "по убыванию"
      Page<News> findAllByOrderByLikesDesc(Pageable pageable);
+     Page<News> findAllByOrderByCommentsCountDesc(Pageable pageable);
+
 }
 

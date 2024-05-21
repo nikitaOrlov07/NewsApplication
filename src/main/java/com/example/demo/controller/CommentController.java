@@ -2,6 +2,8 @@ package com.example.demo.controller;
 
 import com.example.demo.models.Comment;
 import com.example.demo.models.security.UserEntity;
+import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.NewsRepository;
 import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
@@ -25,16 +27,27 @@ public class CommentController {
     private NewsService newsService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private NewsRepository repository;
+    @Autowired
+    CommentRepository repository2;
     private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
     @PostMapping("/comments/{newsId}/save")
     public String addComment(@ModelAttribute("comments") Comment comment , @PathVariable("newsId") Long newsId) {
-        String username = SecurityUtil.getSessionUser();
-        comment.setNews(newsService.getNewsById(newsId));
 
-        comment.setAuthor(username);
-        commentService.saveComment(comment);
+        commentService.saveComment(comment,newsId);
         return "redirect:/news/"+newsId;
     }
+
+    @PostMapping("/comments/{newsId}/delete/{commentId}")
+    public String deleteComment(@PathVariable("commentId") Long commentId, @PathVariable("newsId") Long newsId) {
+        // Take comment grom database
+        Comment comment = repository2.findCommentById(commentId);
+        commentService.deleteComment(comment,newsId);
+
+        return "redirect:/news/" + newsId;
+    }
+
 
     // like and dislike for news
     @PostMapping("/news/actions/{newsId}")

@@ -70,23 +70,31 @@
     </div>
     <div style="margin-top: 20px">
         <hr style="border: 2px solid #ccc; border-color: #032738">
-        <!-- Комментарии -->
+        <!-- Comments -->
         <div class="col-lg-8" style="padding: 20px">
-            <h2 class="club-title" style="font-size: 2em; font-weight: bold;">Comments:</h2>
-            <!-- Форма для добавления комментария -->
+            <div style="display: flex; align-items: center;">
+                <h2 class="club-title" style="font-size: 2em; font-weight: bold; margin-right: 10px;">Comments:</h2>
+                <span class="badge badge-pill badge-secondary" th:text="'('+${news.commentsCount}+')'" style="font-size: 1.5em;"></span>
+            </div>
+
+            <!-- Form for adding comment -->
             <form th:action="@{/comments/{newsId}/save(newsId=${news.id})}" method="post">
-                <textarea name="text" placeholder="Напишите ваш комментарий здесь..." required rows="7" cols="80" style="resize: none;"></textarea>
+                <textarea name="text" placeholder="write your comment ..." required rows="7" cols="80" style="resize: none;"></textarea>
                 <input type="hidden" th:value="${news.id}" name="club" />
                 <button type="submit" class="btn btn-secondary"style=" margin-bottom: 50px;">Send</button>
             </form>
+            <!--List of all comments-->
             <div th:each="comment : ${comments}">
                 <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;">
                     <p class="comment-author" th:text="${comment.author}+':'"  style="font-size: 1.2em; font-weight: bold;"></p>
                     <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5;"></p>
+                    <form th:if="${user.id == comment.author_id or user.hasAdminRole()}" th:action="@{/comments/{newsId}/delete/{commentId}(newsId=${news.id}, commentId=${comment.id})}" method="post">
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                    </form>
                 </div>
             </div>
-
         </div>
+
 
     </div>
 
