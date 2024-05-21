@@ -17,10 +17,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
 import java.util.List;
@@ -97,4 +94,12 @@ public class MainController{
     model.addAttribute("sort",sort);
     return "home-page";
 }
+  //user cabinet
+    @GetMapping("/cabinet")
+    public String userCabinet(Model model)
+    {
+        UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
+        model.addAttribute("user", user);
+        return "personal-cabinet";
+    }
 }

@@ -86,6 +86,16 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
+    public List<UserEntity> findAllByLikedComments(Comment comment) {
+      return   userRepository.findAllByLikedComments(comment);
+    }
+
+    @Override
+    public List<UserEntity> findAllByDislikedComments(Comment comment) {
+        return findAllByDislikedComments(comment);
+    }
+
+    @Override
     public void actionNews(String action, News news, String type,Comment comment) {
         if(action != null && !action.isEmpty())
         {

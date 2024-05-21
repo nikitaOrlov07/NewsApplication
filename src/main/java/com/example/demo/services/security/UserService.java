@@ -14,11 +14,19 @@ public interface UserService {
     UserEntity findByEmail(String email);
 
     UserEntity findByUsername(String username);
+
     List<UserEntity> findAllUsers();
 
     UserEntity findById(Long userId);
+
     void actionNews(String action, News news, String type, Comment comment);
 
     void updateNewsList(News news);
-     void updateUser(UserEntity user);
+
+    void updateUser(UserEntity user);
+
+    // for comments delete
+    List<UserEntity> findAllByLikedComments(Comment comment);
+
+    List<UserEntity> findAllByDislikedComments(Comment comment);
 }

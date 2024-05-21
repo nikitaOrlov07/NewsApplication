@@ -22,8 +22,7 @@ public class CommentServiceimpl implements CommentService {
     private NewsService newsService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private UserRepository repository;
+
 
     public void saveComment(Comment comment,Long newsId) {
 
@@ -54,8 +53,8 @@ public class CommentServiceimpl implements CommentService {
         News news = newsService.getNewsById(newsId);
         news.setCommentsCount(news.getCommentsCount() - 1);
 
-        List<UserEntity> usersWhoLiked = repository.findAllByLikedComments(comment);
-        List<UserEntity> usersWhoDisLiked= repository.findAllByDislikedComments(comment);
+        List<UserEntity> usersWhoLiked = userService.findAllByLikedComments(comment);
+        List<UserEntity> usersWhoDisLiked= userService.findAllByDislikedComments(comment);
 
         for (UserEntity user : usersWhoLiked) {
             user.getLikedComments().remove(comment);

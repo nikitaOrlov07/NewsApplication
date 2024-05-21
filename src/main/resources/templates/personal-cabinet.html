@@ -1,0 +1,90 @@
+<!DOCTYPE html>
+<html lang="en"
+      xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/thymeleaf/layout"
+      xmlns:sec="http://www/thymeleaf.org"
+      layout:decorate="~{layout}"
+      xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Title</title>
+    <style>
+        body {
+            background-image: url("/assets/img/detailPage.jpg");
+            background-repeat: no-repeat;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
+            background-size: cover;
+        }
+        .news-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 20px;
+            gap: 20px;
+        }
+        .card {
+            flex: 0 0 auto; /* Prevent the card from shrinking */
+            width: 300px;
+            overflow: auto;
+        }
+    </style>
+</head>
+<body>
+<div class="content-container">
+    <section layout:fragment="body" style="margin-left: 20px">
+        <div>
+               <h2 style="color: black">Profil Information</h2>
+               <p><strong>Id:</strong> <span th:text="${user.id}"/></p>
+               <p><strong>Username:</strong> <span th:text="${user.username}"/></p>
+               <p><strong>Email:</strong> <span th:text="${user.email}"/></p>
+               <p><strong>Town:</strong> <span th:if="${user.town} != null" th:text="(${user.town.trim()} != '' ? ${user.town} : 'undefined')"></span></p>
+               <p><strong>Phone number:</strong> <span th:text="(${user.phoneNumber} != null ? ${user.phoneNumber} : 'undefined')"></span></p>
+        </div>
+        <hr style="border: 2px solid #ccc; border-color: #032738">
+        <h2 > Recently Seen News</h2>
+        <span th:if="${user.seenNews == null or #lists.isEmpty(user.seenNews)}">There are no news</span>
+        <div th:if="${user.seenNews != null}" class="news-container">
+            <div th:each="news, iterStat : ${user.seenNews}" th:if="${iterStat.index >= user.seenNews.size() - 5}">
+                <div class="card mb-4">
+                    <div class="card-body" style="height: 400px;">
+                        <h5 class="card-title" th:text="${news.title}"></h5>
+                        <p class="card-text">
+                            <strong>Published Date:</strong> <span th:text="${news.pubdate}"></span><br/>
+                            <strong>Categories:</strong>
+                            <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
+                            <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
+                            <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
+                            <strong>Views: </strong><span th:text="${news.pageVisitingCount}"></span>
+                        </p>
+                    </div>
+                    <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
+                </div>
+            </div>
+        </div>
+        <hr style="border: 2px solid #ccc; border-color: #032738">
+        <h2> Liked News</h2>
+        <span th:if="${user.likedNews == null or #lists.isEmpty(user.likedNews)}">There are no news</span>
+        <div th:if="${user.seenNews != null}" class="news-container">
+            <div th:each="news, iterStat : ${user.likedNews}" th:if="${iterStat.index >= user.likedNews.size() - 5}">
+                <div class="card mb-4">
+                    <div class="card-body" style="height: 400px;">
+                        <h5 class="card-title" th:text="${news.title}"></h5>
+                        <p class="card-text">
+                            <strong>Published Date:</strong> <span th:text="${news.pubdate}"></span><br/>
+                            <strong>Categories:</strong>
+                            <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
+                            <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
+                            <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
+                            <strong>Views: </strong><span th:text="${news.pageVisitingCount}"></span>
+                        </p>
+                    </div>
+                    <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
+                </div>
+            </div>
+        </div>
+
+    </section>
+</div>
+</body>
+</html>
