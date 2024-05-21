@@ -25,6 +25,7 @@ public class SecurityConfig {
                 .authorizeRequests(authorize -> authorize
                         .requestMatchers(new AntPathRequestMatcher("/news")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/news/{newsId}")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/news/1")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/news/find")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/comments")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/login")).permitAll()
@@ -33,7 +34,8 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}")).permitAll()
-
+                        .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}/comments/{commentId}")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}")).permitAll()
 
                         // Only administrator can get access to these web-pages
                         .requestMatchers(new AntPathRequestMatcher("/users-list")).hasAuthority("ADMIN") // hasAutority - checks users role

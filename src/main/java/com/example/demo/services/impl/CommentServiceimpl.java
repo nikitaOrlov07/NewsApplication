@@ -4,6 +4,7 @@ import com.example.demo.models.Comment;
 import com.example.demo.models.News;
 import com.example.demo.models.security.UserEntity;
 import com.example.demo.repository.CommentRepository;
+import com.example.demo.repository.security.UserRepository;
 import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.security.UserService;
@@ -21,6 +22,8 @@ public class CommentServiceimpl implements CommentService {
     private NewsService newsService;
     @Autowired
     private UserService userService;
+    @Autowired
+    private UserRepository repository;
 
     public void saveComment(Comment comment,Long newsId) {
 
@@ -30,24 +33,38 @@ public class CommentServiceimpl implements CommentService {
         news.setCommentsCount(news.getCommentsCount() + 1);
 
         comment.setAuthor(user.getUsername());
-        comment.setAuthor_id(user.getId());
+        comment.setAuthorId(user.getId());
         newsService.updateNews(news);
         commentRepository.save(comment);
+
+
+
+
     }
 
     @Override
-    public List<Comment> getComments(Long clubId) {
-        return commentRepository.findCommentByNewsId(clubId);
+    public List<Comment> getComments(Long commentId) {
+        return commentRepository.findCommentByNewsId(commentId);
     }
 
     @Override
     public void deleteComment (Comment comment, Long newsId) {
-        String username = SecurityUtil.getSessionUser();
+
+
         News news = newsService.getNewsById(newsId);
-        comment.setNews(news);
         news.setCommentsCount(news.getCommentsCount() - 1);
 
-        comment.setAuthor(username);
+        List<UserEntity> usersWhoLiked = repository.findAllByLikedComments(comment);
+        List<UserEntity> usersWhoDisLiked= repository.findAllByDislikedComments(comment);
+
+        for (UserEntity user : usersWhoLiked) {
+            user.getLikedComments().remove(comment);
+            userService.updateUser(user);
+        }
+        for (UserEntity user : usersWhoDisLiked) {
+            user.getDislikedComments().remove(comment);
+            userService.updateUser(user);
+        }
         newsService.updateNews(news);
         commentRepository.delete(comment);
     }

@@ -81,6 +81,11 @@ public class UserServiceimpl implements UserService {
     }
 
     @Override
+    public void updateUser(UserEntity user) {
+        userRepository.save(user);
+    }
+
+    @Override
     public void actionNews(String action, News news, String type,Comment comment) {
         if(action != null && !action.isEmpty())
         {
@@ -210,5 +215,6 @@ public class UserServiceimpl implements UserService {
     public List<UserEntity> findAllUsers() {
         return userRepository.findAll();
     }
+
 
 }

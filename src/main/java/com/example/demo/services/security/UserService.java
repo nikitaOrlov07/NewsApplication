@@ -20,5 +20,5 @@ public interface UserService {
     void actionNews(String action, News news, String type, Comment comment);
 
     void updateNewsList(News news);
-
+     void updateUser(UserEntity user);
 }

@@ -11,7 +11,7 @@ public class Comment {
     private Long id;
     private String text;
     private String author;
-    private Long author_id;
+    private Long authorId;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
