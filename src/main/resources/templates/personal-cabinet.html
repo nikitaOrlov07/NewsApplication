@@ -42,8 +42,8 @@
                <p><strong>Phone number:</strong> <span th:text="(${user.phoneNumber} != null ? ${user.phoneNumber} : 'undefined')"></span></p>
         </div>
         <hr style="border: 2px solid #ccc; border-color: #032738">
-        <h2 > Recently Seen News</h2>
-        <span th:if="${user.seenNews == null or #lists.isEmpty(user.seenNews)}">There are no news</span>
+        <h2  > Recently Seen News</h2>
+        <span th:if="${user.seenNews == null or #lists.isEmpty(user.seenNews)}" style="margin-left: 10px">There are no news</span>
         <div th:if="${user.seenNews != null}" class="news-container">
             <div th:each="news, iterStat : ${user.seenNews}" th:if="${iterStat.index >= user.seenNews.size() - 5}">
                 <div class="card mb-4">
@@ -64,7 +64,7 @@
         </div>
         <hr style="border: 2px solid #ccc; border-color: #032738">
         <h2> Liked News</h2>
-        <span th:if="${user.likedNews == null or #lists.isEmpty(user.likedNews)}">There are no news</span>
+        <span th:if="${user.likedNews == null or #lists.isEmpty(user.likedNews)}" style="margin-left: 10px">There are no news</span>
         <div th:if="${user.seenNews != null}" class="news-container">
             <div th:each="news, iterStat : ${user.likedNews}" th:if="${iterStat.index >= user.likedNews.size() - 5}">
                 <div class="card mb-4">

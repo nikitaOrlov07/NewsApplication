@@ -1,9 +1,8 @@
 package com.example.demo.services.security;
 
-import com.example.demo.controller.CommentController;
+
 import com.example.demo.models.News;
 import com.example.demo.security.SecurityUtil;
-import com.example.demo.services.security.UserService;
 import com.example.demo.DTO.security.RegistrationDto;
 import com.example.demo.models.Comment;
 import com.example.demo.models.security.RoleEntity;

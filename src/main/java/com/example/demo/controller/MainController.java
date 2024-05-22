@@ -20,6 +20,7 @@ import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.List;
 
 @Controller
@@ -53,13 +54,21 @@ public class MainController{
             userService.updateNewsList(news);
             newsService.updateNews(news);// update views-counter
         }
+        // interesting news
+        NewsPagination  interestingNews = newsService.getNewsByLanguageAndCategoryAndQueryAndPubDate(news.getLanguage(),news.getCategory().get(0), news.getPubdate(),null,"views",0,5);
 
-
+        // to exclude the current news item from the list  (interestingNews.getData() - immutable list )
+        if (interestingNews != null && interestingNews.getData() != null && !interestingNews.getData().isEmpty() && interestingNews.getData().contains(news)) {
+            List<News> mutableNewsList = new ArrayList<>(interestingNews.getData());
+            mutableNewsList.remove(news);
+            interestingNews.setData(mutableNewsList);
+        }
 
         List<Comment> comments_list = commentService.getComments(newsId);
         model.addAttribute("comments", comments_list);
         model.addAttribute("news", news);
         model.addAttribute("user",user);
+        model.addAttribute("intereStingNews", interestingNews);
         return "detail-page";
     }
     @GetMapping("/news/find")

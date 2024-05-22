@@ -33,9 +33,10 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/css/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/js/**")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/assets/**")).permitAll()
+                        // own security logic in controller
                         .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}/comments/{commentId}")).permitAll()
-                        .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}")).permitAll()
+                        .requestMatchers(new AntPathRequestMatcher("/comments/{newsId}/save")).permitAll()
 
                         // Only administrator can get access to these web-pages
                         .requestMatchers(new AntPathRequestMatcher("/users-list")).hasAuthority("ADMIN") // hasAutority - checks users role

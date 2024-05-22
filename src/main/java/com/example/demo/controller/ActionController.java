@@ -1,9 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.models.Comment;
-import com.example.demo.models.security.UserEntity;
 import com.example.demo.repository.CommentRepository;
-import com.example.demo.repository.NewsRepository;
 import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
@@ -17,21 +15,22 @@ import com.example.demo.models.News;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 @Controller
-public class CommentController {
+public class ActionController {
     @Autowired
     private CommentService commentService;
     @Autowired
     private NewsService newsService;
     @Autowired
     private UserService userService;
-    @Autowired
-    private NewsRepository repository;
-    @Autowired
-    CommentRepository repository2;
-    private static final Logger logger = LoggerFactory.getLogger(CommentController.class);
+    private static final Logger logger = LoggerFactory.getLogger(ActionController.class);
     @PostMapping("/comments/{newsId}/save")
-    public String addComment(@ModelAttribute("comments") Comment comment , @PathVariable("newsId") Long newsId) {
-
+    public String addComment(@ModelAttribute("comments") Comment comment , @PathVariable("newsId") Long newsId, RedirectAttributes redirectAttributes  ) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null) // if the user is not authorized
+        {
+            redirectAttributes.addFlashAttribute("loginError", "You must be logged in");
+            return "redirect:/login";
+        }
         commentService.saveComment(comment,newsId);
         return "redirect:/news/"+newsId;
     }
@@ -39,7 +38,7 @@ public class CommentController {
     @PostMapping("/comments/{newsId}/delete/{commentId}")
     public String deleteComment(@PathVariable("commentId") Long commentId, @PathVariable("newsId") Long newsId) {
         // Take comment grom database and delete it with service method
-        Comment comment = repository2.findCommentById(commentId);
+        Comment comment = commentService.findCommentById(commentId);
         commentService.deleteComment(comment,newsId);
 
         return "redirect:/news/" + newsId;
@@ -54,7 +53,7 @@ public class CommentController {
         String username = SecurityUtil.getSessionUser();
         if(username == null) // if the user is not authorized
         {
-            redirectAttributes.addFlashAttribute("loginError", "You must login");
+            redirectAttributes.addFlashAttribute("loginError", "You must be logged in");
             return "redirect:/login";
         }
         News news = newsService.getNewsById(newsId);
@@ -81,7 +80,7 @@ public class CommentController {
         String username = SecurityUtil.getSessionUser();
         if (username == null) // if the user is not authorized
         {
-            redirectAttributes.addFlashAttribute("loginError", "You must login");
+            redirectAttributes.addFlashAttribute("loginError", "You must be logged in");
             return "redirect:/login";
         }
 

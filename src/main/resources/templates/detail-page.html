@@ -18,6 +18,12 @@
             min-height: 100vh;
             background-size: cover;
         }
+        .news-container {
+            display: flex;
+            overflow-x: auto;
+            padding: 20px;
+            gap: 20px;
+        }
     </style>
 
 </head>
@@ -58,7 +64,6 @@
                         </form>
 
                     </div>
-
                 </div>
             </div>
         </div>
@@ -66,6 +71,28 @@
 
         <iframe controls width="300" th:src="${news.videoUrl}" style="width: 600px"></iframe>
 
+        <div th:if="${intereStingNews != null and !#lists.isEmpty(intereStingNews.getData())}">
+            <hr style="border: 2px solid #ccc; border-color: #032738">
+            <h2 style="font-size: 2em; font-weight: bold; margin-left: 20px">Can be interesting:</h2>
+            <div th:if="${intereStingNews != null}" class="news-container">
+            <div th:each="news, iterStat : ${intereStingNews.getData()}">
+                <div class="card mb-4">
+                    <div class="card-body" style="height: 400px;width: 400px">
+                        <h5 class="card-title" th:text="${news.title}"></h5>
+                        <p class="card-text">
+                            <strong>Published Date:</strong> <span th:text="${news.pubdate}"></span><br/>
+                            <strong>Categories:</strong>
+                            <span th:each="category : ${news.category}" th:text="${category}+' '"></span>
+                            <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
+                            <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
+                            <strong>Views: </strong><span th:text="${news.pageVisitingCount}"></span>
+                        </p>
+                    </div>
+                    <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
+                </div>
+            </div>
+        </div>
+    </div>
 
     </div>
     <div style="margin-top: 20px">
@@ -79,13 +106,13 @@
 
             <!-- Form for adding comment -->
             <form th:action="@{/comments/{newsId}/save(newsId=${news.id})}" method="post">
-                <textarea name="text" placeholder="write your comment ..." required rows="7" cols="80" style="resize: none;"></textarea>
+                <textarea name="text" placeholder="write your comment ..." required rows="7" cols="200" style="resize: none;"></textarea>
                 <input type="hidden" th:value="${news.id}" name="club" />
                 <button type="submit" class="btn btn-secondary"style=" margin-bottom: 50px;">Send</button>
             </form>
             <!--List of all comments-->
             <div th:each="comment : ${comments}">
-                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;position: relative">
+                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;position: relative ;width:1000px;background-color: #b0b0b0">
                     <p class="comment-author" th:text="${comment.author}+':'"  style="font-size: 1.2em; font-weight: bold;color: #000742"></p>
                     <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5;color: #000000"></p>
                     <form th:if="${user!=null and ( user.id == comment.authorId or user.hasAdminRole())}" th:action="@{/comments/{newsId}/delete/{commentId}(newsId=${news.id}, commentId=${comment.id})}" method="post">

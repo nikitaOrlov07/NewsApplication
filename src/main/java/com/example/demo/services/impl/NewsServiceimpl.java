@@ -62,8 +62,8 @@ public class NewsServiceimpl implements NewsService {
     public NewsPagination getAllNews(int pageNo, int pageSize) {
 
         // check for error with saving non-existed data that I got from Api
-
-        /* try {
+        /*
+        try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
         }
         catch (Exception e)
@@ -72,10 +72,6 @@ public class NewsServiceimpl implements NewsService {
         }
 
          */
-
-
-
-
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);
         List<News> newsList= news.getContent();

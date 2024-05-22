@@ -63,7 +63,7 @@
                 Invalid username and password.
             </div>
             <div th:if="${loginError}" class="alert alert-info">
-                You must login
+                <span th:text="${loginError}"></span>
             </div>
             <div th:if="${param.logout}" class="alert alert-success">
                 You have been logged out.</div>
