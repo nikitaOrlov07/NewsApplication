@@ -3,6 +3,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
+import org.springframework.security.config.annotation.method.configuration.EnableGlobalMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -12,6 +13,7 @@ import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.util.matcher.AntPathRequestMatcher;
 @Configuration
 @EnableWebSecurity
+@EnableGlobalMethodSecurity(prePostEnabled = true)
 public class SecurityConfig {
     //Configure Security Filter chain - chain (цепочка) of methods , that will control how your security works
     UserDetailsService userDetailsService;
@@ -38,8 +40,6 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}/comments/{commentId}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/comments/{newsId}/save")).permitAll()
 
-                        // Only administrator can get access to these web-pages
-                        .requestMatchers(new AntPathRequestMatcher("/users-list")).hasAuthority("ADMIN") // hasAutority - checks users role
                         .requestMatchers(new AntPathRequestMatcher("/users/{userId}/delete")).hasAuthority("ADMIN")
                         // nobody can delete ADMIN user (even ADMIN himself)
                         .requestMatchers(new AntPathRequestMatcher("/users/2/delete")).denyAll()

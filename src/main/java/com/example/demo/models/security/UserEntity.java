@@ -27,6 +27,7 @@ public class UserEntity {
     private Long phoneNumber;
     private int roleId; //{0,1}
 
+    @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
     @JoinTable(
             name = "users_role",joinColumns = {@JoinColumn(name ="user_id",referencedColumnName ="id")},

@@ -1,6 +1,7 @@
 package com.example.demo.controller;
 
 import com.example.demo.DTO.security.RegistrationDto;
+import com.example.demo.models.security.RoleEntity;
 import com.example.demo.models.security.UserEntity;
 import com.example.demo.repository.security.RoleRepository;
 import com.example.demo.services.security.UserService;
@@ -12,6 +13,9 @@ import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @Controller
 public class AuthentificationController {
@@ -35,11 +39,11 @@ public class AuthentificationController {
         // Check by email
         UserEntity existingUserEmail = userService.findByEmail(user.getEmail());
 
+
         if(existingUserEmail != null && existingUserEmail.getEmail() != null && !existingUserEmail.getEmail().isEmpty()) {
             model.addAttribute("user", user);
             return "redirect:/register?fail";
         }
-
         // Check by existing usernames
         UserEntity existingUserUsername = userService.findByUsername(user.getUsername());
         if(existingUserUsername != null && existingUserUsername.getUsername() != null && !existingUserUsername.getUsername().isEmpty()) {
@@ -53,6 +57,11 @@ public class AuthentificationController {
             return "register";
         }
 
+        RoleEntity adminRole = new RoleEntity();
+        adminRole.setName("ADMIN");
+        List<RoleEntity> roles = new ArrayList<>();
+        roles.add(adminRole);
+        user.setRoles(roles);
         userService.saveUser(user);
         return "redirect:/clubs?success";
     }

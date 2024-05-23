@@ -1,10 +1,12 @@
 package com.example.demo.mappers;
 
 import com.example.demo.DTO.ApiResponse;
+import com.example.demo.DTO.NewsDto;
 import com.example.demo.DTO.Result;
 import com.example.demo.models.News;
 
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 public class NewsMapper {
@@ -27,6 +29,17 @@ public class NewsMapper {
             }
         }
         return newsList;
+    }
+    public static News getNewsFromDto(NewsDto newsDto)
+    {
+        News news = News.builder()
+                .id(newsDto.getId())
+                .title(newsDto.getTitle())
+                .imageUrl(newsDto.getImageUrl())
+                .description(newsDto.getDescription())
+                .country(Collections.singletonList(newsDto.getCountry()))
+                .build(); //методы builder и build добавились к club
+        return  news;
     }
 
 }

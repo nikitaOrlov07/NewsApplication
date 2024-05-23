@@ -1,7 +1,10 @@
 package com.example.demo.DTO.security;
 
+import com.example.demo.models.security.RoleEntity;
 import jakarta.validation.constraints.NotEmpty;
 import lombok.Data;
+
+import java.util.List;
 
 @Data
 public class RegistrationDto {
@@ -14,4 +17,5 @@ public class RegistrationDto {
     private String password;
     private String town;
     private Long phoneNumber;
+    List<RoleEntity> roles;
 }
