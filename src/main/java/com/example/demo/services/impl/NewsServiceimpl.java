@@ -194,7 +194,7 @@ public class NewsServiceimpl implements NewsService {
                 user.getLikedNews().remove(news);
                }
             }
-            //delete all comments from users comments list
+
         // Remove comments associated with the news
         List<Comment> comments = commentService.getComments(news.getId());
         if(comments != null && !comments.isEmpty()) {
@@ -217,7 +217,7 @@ public class NewsServiceimpl implements NewsService {
                     }
                 }
 
-                // Remove comment from all users' comments lists
+                // Remove comment from all users comments lists
                 List<UserEntity> usersWithComment = userRepository.findAllByComments(Arrays.asList(comment));
                 if(usersWithComment != null && !usersWithComment.isEmpty()) {
                     for (UserEntity user : usersWithComment) {
@@ -225,13 +225,11 @@ public class NewsServiceimpl implements NewsService {
                         userService.updateUser(user);
                     }
                 }
-
-                // Finally, delete the comment from the repository
                 commentService.deleteComment(comment, news.getId());
             }
         }
 
-        // Delete the news itself
+
         newsRepository.delete(news);
     }
 

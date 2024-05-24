@@ -12,8 +12,6 @@ import java.util.List;
 @AllArgsConstructor
 @NoArgsConstructor
 public class NewsDto {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     String imageUrl;
     String videoUrl;
