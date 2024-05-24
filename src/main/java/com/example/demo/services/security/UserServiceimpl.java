@@ -73,7 +73,7 @@ public class UserServiceimpl implements UserService {
         String userName = SecurityUtil.getSessionUser();
         UserEntity user =  userRepository.findByUsername(userName);
 
-        if (!user.getSeenNews().contains(news)) {
+        if (user != null && !user.getSeenNews().contains(news)) {
             user.getSeenNews().add(news);
             userRepository.save(user);
         }
@@ -91,7 +91,7 @@ public class UserServiceimpl implements UserService {
 
     @Override
     public List<UserEntity> findAllByDislikedComments(Comment comment) {
-        return findAllByDislikedComments(comment);
+        return userRepository.findAllByDislikedComments(comment);
     }
 
     @Override

@@ -4,6 +4,7 @@ import com.example.demo.DTO.ApiResponse;
 import com.example.demo.DTO.NewsPagination;
 import com.example.demo.models.Comment;
 import com.example.demo.models.News;
+import com.example.demo.models.security.UserEntity;
 
 import java.sql.Date;
 import java.util.List;
@@ -17,4 +18,5 @@ public interface NewsService {
     NewsPagination getNewsByLanguageAndCategoryAndQueryAndPubDate(String language, String category,  String pubDate, String query, String sort, int pageNo, int pageSize);
     void updateNews(News news);
 
+    void deleteNews(News news);
 }

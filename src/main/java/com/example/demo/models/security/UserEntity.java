@@ -86,4 +86,7 @@ public class UserEntity {
     )
     private List<Comment> dislikedComments = new ArrayList<>();
 
+    @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)  // one user --> many comments in comment side i have @ ManyToone annotation
+    private List<Comment> comments = new ArrayList<>();
+
 }

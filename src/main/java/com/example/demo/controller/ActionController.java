@@ -1,14 +1,13 @@
 package com.example.demo.controller;
 
 import com.example.demo.models.Comment;
-import com.example.demo.repository.CommentRepository;
+import com.example.demo.models.security.UserEntity;
 import com.example.demo.security.SecurityUtil;
 import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
 import com.example.demo.services.security.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,17 +15,18 @@ import com.example.demo.models.News;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.time.LocalDateTime;
-import java.util.Date;
 
 @Controller
 public class ActionController {
-    @Autowired
-    private CommentService commentService;
-    @Autowired
-    private NewsService newsService;
-    @Autowired
-    private UserService userService;
+    private final CommentService commentService;
+    private final NewsService newsService;
+    private final UserService userService;
+
+    public ActionController(CommentService commentService, NewsService newsService, UserService userService) {
+        this.commentService = commentService;
+        this.newsService = newsService;
+        this.userService = userService;
+    }
     private static final Logger logger = LoggerFactory.getLogger(ActionController.class);
     @PostMapping("/comments/{newsId}/save")
     public String addComment(@ModelAttribute("comments") Comment comment , @PathVariable("newsId") Long newsId, RedirectAttributes redirectAttributes  ) {
@@ -36,16 +36,30 @@ public class ActionController {
             redirectAttributes.addFlashAttribute("loginError", "You must be logged in");
             return "redirect:/login";
         }
+        UserEntity user = userService.findByUsername(username);
+        user.getComments().add(comment);
+
+        // For current date time
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String formattedDateTime = currentDateTime.format(formatter);
+        comment.setPubDate(formattedDateTime);
+
+        comment.setUser(user);
+
+
         commentService.saveComment(comment,newsId);
         return "redirect:/news/"+newsId;
     }
 
     @PostMapping("/comments/{newsId}/delete/{commentId}")
     public String deleteComment(@PathVariable("commentId") Long commentId, @PathVariable("newsId") Long newsId) {
-        // Take comment grom database and delete it with service method
+        // Take comment from database and delete it with service method and from users comment list
         Comment comment = commentService.findCommentById(commentId);
+        UserEntity user = userService.findById(comment.getUser().getId());
+        user.getComments().remove(comment);
         commentService.deleteComment(comment,newsId);
-
         return "redirect:/news/" + newsId;
     }
 
@@ -129,8 +143,8 @@ public class ActionController {
             return "redirect:/news";
         }
 
+        // For current date time
         LocalDateTime currentDateTime = LocalDateTime.now();
-        // Formátovač na konkrétny formát dátumu a času
         DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
 
         String formattedDateTime = currentDateTime.format(formatter);
@@ -161,6 +175,19 @@ public class ActionController {
         }
 
         newsService.updateNews(news);
+        return "redirect:/news";
+    }
+    // Admin can delete news
+    @GetMapping("/news/delete/{newsId}")
+    public String deleteNews(@PathVariable("newsId") Long newsId)
+    {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
+        {
+            return "redirect:/news";
+        }
+        News news = newsService.getNewsById(newsId);
+        newsService.deleteNews(news);
         return "redirect:/news";
     }
 

@@ -1,5 +1,6 @@
 package com.example.demo.models;
 
+import com.example.demo.models.security.UserEntity;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -11,7 +12,7 @@ public class Comment {
     private Long id;
     private String text;
     private String author;
-    private Long authorId;
+    private  String pubDate;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "news_id")
@@ -20,6 +21,11 @@ public class Comment {
     // likes and dislikes
     int likes = 0;
     int dislikes = 0;
+
+    // it is for "comment-list"
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id")
+    private UserEntity user;
 
 
 }

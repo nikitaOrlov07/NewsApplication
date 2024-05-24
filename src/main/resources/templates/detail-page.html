@@ -62,7 +62,10 @@
                             <button name="interaction" value="like" type="submit" style="width: 50px; height: 50px;">👍</button>
                             <button name="interaction" value="dislike" type="submit" style="width: 50px; height: 50px;">👎</button>
                         </form>
-                       <a class="btn btn-primary" th:if="${user!=null and user.hasAdminRole()}"  th:href="@{/news/update/{newsId}(newsId = ${news.id})}" style="margin-top: 10px"> Update news</a>
+                        <div th:if="${user!=null and user.hasAdminRole()}" style="margin-top: 10px">
+                            <a class="btn btn-primary" th:href="@{/news/update/{newsId}(newsId = ${news.id})}"> Update news</a>
+                            <a class="btn btn-primary" th:href="@{/news/delete/{newsId}(newsId = ${news.id})}" style="background-color: red"> Delete news</a>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -112,18 +115,25 @@
             </form>
             <!--List of all comments-->
             <div th:each="comment : ${comments}">
-                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px;position: relative ;width:1000px;background-color: #b0b0b0">
-                    <p class="comment-author" th:text="${comment.author}+':'"  style="font-size: 1.2em; font-weight: bold;color: #000742"></p>
-                    <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5;color: #000000"></p>
-                    <form th:if="${user!=null and ( user.id == comment.authorId or user.hasAdminRole())}" th:action="@{/comments/{newsId}/delete/{commentId}(newsId=${news.id}, commentId=${comment.id})}" method="post">
-                        <button type="submit" class="btn btn-danger" style="position: absolute; bottom: 0; right: 0;" >Delete</button>
-                    </form>
-                    <strong>Likes: </strong><span th:text="${comment.likes}"/>
-                    <strong>Dislikes: </strong><span th:text="${comment.dislikes}"/>
-                    <form  th:action="@{/news/actions/{newsId}/comments/{commentId}(newsId=${news.id},commentId=${comment.id})}" method="post">
-                        <button name="interaction" value="like" type="submit" style="width: 50px; height: 50px;">👍</button>
-                        <button name="interaction" value="dislike" type="submit" style="width: 50px; height: 50px;">👎</button>
-                    </form>
+                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; position: relative; width: 1000px; background-color: #b0b0b0;">
+                    <div style="display: flex; justify-content: space-between;">
+                        <div>
+                            <p class="comment-author" th:text="${comment.author}+':'" style="font-size: 1.2em; font-weight: bold; color: #000742;"></p>
+                            <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5; color: #000000;"></p>
+                        </div>
+                        <div style="align-self: flex-start; text-align: right;">
+                            <p class="comment-text" th:text="${comment.pubDate}" style="font-size: 1.2em; line-height: 1.5; color: #000000;"></p>
+                            <form th:if="${user != null and (user.getComments().contains(comment) or user.hasAdminRole())}" th:action="@{/comments/{newsId}/delete/{commentId}(newsId=${news.id}, commentId=${comment.id})}" method="post">
+                                <button type="submit" class="btn btn-danger" style="position: absolute; bottom: 0; left: 5px;">Delete</button>
+                            </form>
+                            <strong>Likes: </strong><span th:text="${comment.likes}"></span>
+                            <strong>Dislikes: </strong><span th:text="${comment.dislikes}"></span>
+                            <form th:action="@{/news/actions/{newsId}/comments/{commentId}(newsId=${news.id},commentId=${comment.id})}" method="post">
+                                <button name="interaction" value="like" type="submit" style="width: 50px; height: 50px;">👍</button>
+                                <button name="interaction" value="dislike" type="submit" style="width: 50px; height: 50px;">👎</button>
+                            </form>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

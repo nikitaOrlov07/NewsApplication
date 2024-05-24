@@ -8,7 +8,7 @@ import java.util.Optional;
 public interface CommentService {
     void saveComment(Comment comment,Long newsId);
 
-    List<Comment> getComments(Long clubId);
+    List<Comment> getComments(Long newsId);
 
     void deleteComment (Comment comment, Long newsId);
     Comment findCommentById(Long commentId);

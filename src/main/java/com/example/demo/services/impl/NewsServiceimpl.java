@@ -3,10 +3,15 @@ package com.example.demo.services.impl;
 import com.example.demo.DTO.ApiResponse;
 import com.example.demo.DTO.NewsPagination;
 import com.example.demo.mappers.NewsMapper;
+import com.example.demo.models.Comment;
 import com.example.demo.models.News;
+import com.example.demo.models.security.UserEntity;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.NewsRepository;
+import com.example.demo.repository.security.UserRepository;
+import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
+import com.example.demo.services.security.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,6 +25,7 @@ import reactor.core.publisher.Flux;
 
 import java.sql.Date;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 @Service
@@ -27,7 +33,11 @@ public class NewsServiceimpl implements NewsService {
     @Autowired
     NewsRepository newsRepository;
     @Autowired
-    CommentRepository commentRepository;
+    CommentService commentService;
+    @Autowired
+    UserService userService;
+    @Autowired
+    UserRepository userRepository;
     private static final Logger logger = LoggerFactory.getLogger(NewsServiceimpl.class);
     @Override
     public List<ApiResponse> getNewsFromApi() {
@@ -130,7 +140,6 @@ public class NewsServiceimpl implements NewsService {
                 news = newsRepository.getNewsByPubdate(pubDate, pageable);
             }
         }
-
         // if query , category, language, pubDate --> were empty --> we use only sorting
         if(news == null)
         {
@@ -145,9 +154,7 @@ public class NewsServiceimpl implements NewsService {
               }
           }
         }
-
         List<News> newsList= news.getContent();
-
         NewsPagination newsPagination = new NewsPagination();
         newsPagination.setData(newsList);
         newsPagination.setPageNo(news.getNumber());
@@ -155,7 +162,6 @@ public class NewsServiceimpl implements NewsService {
         newsPagination.setTotalElements(news.getTotalElements());
         newsPagination.setTotalPages(news.getTotalPages());
         newsPagination.setLast(news.isLast());
-
         return newsPagination;
     }
 
@@ -164,7 +170,71 @@ public class NewsServiceimpl implements NewsService {
         newsRepository.save(news);
     }
 
+    @Override
+    public void deleteNews(News news) {
+
+            // for seen News
+            List<UserEntity> users = userRepository.findAllBySeenNews(news);
+            if(users != null && !users.isEmpty()) {
+                for (UserEntity user : users) {
+                    user.getSeenNews().remove(news);
+                }
+            }
+            // for liked news
+            users = userRepository.findAllByLikedNews(news);
+            if(users != null && !users.isEmpty()) {
+            for (UserEntity user : users) {
+                user.getLikedNews().remove(news);
+                 }
+            }
+            // for disliked news
+            users =userRepository.findAllByDislikedNews(news);
+            if(users != null && !users.isEmpty()) {
+            for (UserEntity user : users) {
+                user.getLikedNews().remove(news);
+               }
+            }
+            //delete all comments from users comments list
+        // Remove comments associated with the news
+        List<Comment> comments = commentService.getComments(news.getId());
+        if(comments != null && !comments.isEmpty()) {
+            for (Comment comment : comments) {
+                // Remove comment from users who liked the comment
+                List<UserEntity> usersWhoLikedComment = userService.findAllByLikedComments(comment);
+                if(usersWhoLikedComment != null && !usersWhoLikedComment.isEmpty()) {
+                    for (UserEntity user : usersWhoLikedComment) {
+                        user.getLikedComments().remove(comment);
+                        userService.updateUser(user);
+                    }
+                }
+
+                // Remove comment from users who disliked the comment
+                List<UserEntity> usersWhoDislikedComment = userService.findAllByDislikedComments(comment);
+                if(usersWhoDislikedComment != null && !usersWhoDislikedComment.isEmpty()) {
+                    for (UserEntity user : usersWhoDislikedComment) {
+                        user.getDislikedComments().remove(comment);
+                        userService.updateUser(user);
+                    }
+                }
+
+                // Remove comment from all users' comments lists
+                List<UserEntity> usersWithComment = userRepository.findAllByComments(Arrays.asList(comment));
+                if(usersWithComment != null && !usersWithComment.isEmpty()) {
+                    for (UserEntity user : usersWithComment) {
+                        user.getComments().remove(comment);
+                        userService.updateUser(user);
+                    }
+                }
+
+                // Finally, delete the comment from the repository
+                commentService.deleteComment(comment, news.getId());
+            }
+        }
+
+        // Delete the news itself
+        newsRepository.delete(news);
+    }
+
+    }
 
 
-
-}

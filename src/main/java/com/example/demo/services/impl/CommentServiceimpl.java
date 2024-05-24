@@ -32,13 +32,8 @@ public class CommentServiceimpl implements CommentService {
         news.setCommentsCount(news.getCommentsCount() + 1);
 
         comment.setAuthor(user.getUsername());
-        comment.setAuthorId(user.getId());
         newsService.updateNews(news);
         commentRepository.save(comment);
-
-
-
-
     }
 
     @Override
@@ -55,14 +50,15 @@ public class CommentServiceimpl implements CommentService {
 
         List<UserEntity> usersWhoLiked = userService.findAllByLikedComments(comment);
         List<UserEntity> usersWhoDisLiked= userService.findAllByDislikedComments(comment);
-
-        for (UserEntity user : usersWhoLiked) {
-            user.getLikedComments().remove(comment);
-            userService.updateUser(user);
-        }
-        for (UserEntity user : usersWhoDisLiked) {
-            user.getDislikedComments().remove(comment);
-            userService.updateUser(user);
+        if(usersWhoLiked != null || usersWhoDisLiked != null) {
+            for (UserEntity user : usersWhoLiked) {
+                user.getLikedComments().remove(comment);
+                userService.updateUser(user);
+            }
+            for (UserEntity user : usersWhoDisLiked) {
+                user.getDislikedComments().remove(comment);
+                userService.updateUser(user);
+            }
         }
         newsService.updateNews(news);
         commentRepository.delete(comment);

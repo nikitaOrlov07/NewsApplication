@@ -83,6 +83,26 @@
                 </div>
             </div>
         </div>
+        <hr style="border: 2px solid #ccc; border-color: #032738">
+        <h2> Your Last Comments </h2>
+        <span th:if="${user.comments == null or #lists.isEmpty(user.comments)}" style="margin-left: 10px">There are no comments</span>
+        <div th:if="${user.seenNews != null}" >
+            <div th:each="comment, iterStat : ${user.comments}" th:if="${iterStat.index >= user.comments.size() - 5}">
+                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; position: relative; width: 1000px; background-color: #b0b0b0;">
+                <div style="display: flex; justify-content: space-between;">
+                    <div>
+                        <p class="comment-author" th:text="${comment.author}+':'" style="font-size: 1.2em; font-weight: bold; color: #000742;"></p>
+                        <p class="comment-text" th:text="${comment.text}" style="font-size: 1.2em; line-height: 1.5; color: #000000;"></p>
+                    </div>
+                    <div style="align-self: flex-start; text-align: right;">
+                        <p class="comment-text" th:text="${comment.pubDate}" style="font-size: 1.2em; line-height: 1.5; color: #000000;"></p>
+                        <strong>Likes: </strong><span th:text="${comment.likes}"></span>
+                        <strong>Dislikes: </strong><span th:text="${comment.dislikes}"></span>
+                    </div>
+                </div>
+            </div>
+        </div>
+        </div>
 
     </section>
 </div>
