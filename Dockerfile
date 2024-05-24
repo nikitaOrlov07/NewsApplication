@@ -8,3 +8,4 @@ COPY target/demo1-0.0.1-SNAPSHOT.jar /app/demo-0.0.1-SNAPSHOT.jar
 EXPOSE 8080
 # will execute jar file , when container starts(execute containers jar file , not host(from which we copied)),must be broken down into parts
 CMD ["sh", "-c", "sleep 1 && java -jar web-0.0.1-SNAPSHOT.jar"]
+
