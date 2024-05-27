@@ -59,6 +59,7 @@ public class NewsServiceimpl implements NewsService {
     // method for saving non-existed news from Api
     @Override
     public void  saveIfNotExists(List<News> newsList) {
+
         List<News> savedNews = new ArrayList<>();
         for (News news : newsList) {
             News existingNews = newsRepository.findByTitle(news.getTitle()).orElse(null); //if this news is already exist in the database -> write this news into a variable
@@ -72,16 +73,22 @@ public class NewsServiceimpl implements NewsService {
     public NewsPagination getAllNews(int pageNo, int pageSize) {
 
         // check for error with saving non-existed data that I got from Api
-        /*
-        try {
+
+       try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
         }
+
         catch (Exception e)
         {
           logger.error("problem with api response");
         }
 
-         */
+
+
+
+
+
+
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);
         List<News> newsList= news.getContent();

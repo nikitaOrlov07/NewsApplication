@@ -64,7 +64,7 @@
                         </form>
                         <div th:if="${user!=null and user.hasAdminRole()}" style="margin-top: 10px">
                             <a class="btn btn-primary" th:href="@{/news/update/{newsId}(newsId = ${news.id})}"> Update news</a>
-                            <a class="btn btn-primary" th:href="@{/news/delete/{newsId}(newsId = ${news.id})}" style="background-color: red"> Delete news</a>
+                            <a class="btn btn-primary" th:href="@{/news/delete/{newsId}(newsId = ${news.id})}"> Delete news</a>
                         </div>
                     </div>
                 </div>

@@ -10,7 +10,7 @@
     <title>Title</title>
     <style>
         .container {
-            max-width: 2000px; /* Увеличьте это значение для увеличения ширины строки */
+            max-width: 2000px;
         }
         h3 {
             color: #b6b6b6;
@@ -24,11 +24,11 @@
         .btn {
             display: inline-block;
             font-weight: 400;
-            color: #ffffff; /* Изменено на белый для лучшего контраста */
+            color: #ffffff;
             text-align: center;
             vertical-align: middle;
             cursor: pointer;
-            background-color: #021d44; /* Изменено на томатный цвет для яркости */
+            background-color: #021d44;
             border: 1px solid transparent;
             padding: .375rem .75rem;
             font-size: 1rem;
@@ -55,7 +55,7 @@
         <div class="row">
             <div class="col-md-4">
                 <form id="newsForm" action="/news/find" method="get">
-                    <h3>Categories</h3>
+                    <h3 style="margin-top: 10px ; margin-bottom: 0px">Categories</h3>
                     <select name="category" id="category" class="list-group" style="width:400px;height: 40px">
                         <option value="">No Specify</option>
                         <option value="top">Top</option>
@@ -72,9 +72,9 @@
                         <option value="other">Other</option>
                     </select>
 
-                    <br/>
 
-                    <h3>Language</h3>
+
+                    <h3 style="margin-top: 10px ; margin-bottom: 0px">Language</h3>
                     <select name="language" id="language" style="width:400px; height: 40px">
                         <option value="">No Specify</option>
                         <option value="arabic">Arabic</option>
@@ -113,14 +113,13 @@
                         <option value="slovak">Slovak</option>
                     </select>
 
-                    <br/>
 
-                    <h3>Publication Date</h3>
+                    <h3 style="margin-top: 10px ; margin-bottom: 0px" >Publication Date</h3>
                     <input id="pubDate" type="date"  name="pubDate"> <!--Name must be the same as name is @RequestedParam in Controller-->
 
-                    </br>
 
-                    <h3>Sort By</h3>
+
+                    <h3 style="margin-top: 10px ; margin-bottom: 0px">Sort By</h3>
                     <select name="sort" id="sort" style="width:400px; height: 40px">
                         <option value="">No Specify</option>
                         <option value="views">Views</option>
@@ -194,7 +193,7 @@
                             let totalPages = parseInt(body.getAttribute('total-pages'));
                             // search parameters
                             let category = ''; let language = ''; let query = ''; let pubDate = ''; let sort = '';
-                            // Если мы находимся на странице /news/find или /news/search, получаем выбранную категорию, язык и поисковый запрос из localStorage
+                            // If we are on the /news/find or /news/search page, get the selected category, language and search query from localStorage
                             if (path === '/news/find') {
                                 category = localStorage.getItem('selectedCategory') || '';
                                 language = localStorage.getItem('selectedLanguage') || '';
@@ -258,7 +257,7 @@
                                 let sort = document.getElementById('sort').value;
                                 let url = '/news/find'; let params = [];
 
-                                // Сохраняем выбранную категорию, язык и поисковый запрос в localStorage
+                                // Store category , language , pubdate and sort to localStorage
                                 localStorage.setItem('selectedCategory', category);
                                 localStorage.setItem('selectedLanguage', language);
                                 localStorage.setItem('selectedPubDate', pubDate);
@@ -306,28 +305,28 @@
                                 window.location.href = url;
                             });
 
-                            // Получаем выбранные категорию, язык и дату публикации из localStorage
+                            // Get category , language , pubdate and sort from localStorage
                             let selectedCategory = localStorage.getItem('selectedCategory');
                             let selectedLanguage = localStorage.getItem('selectedLanguage');
                             let selectedPubDate = localStorage.getItem('selectedPubDate');
                             let selectedQuery = localStorage.getItem('selectedQuery');
                             let selectedSort = localStorage.getItem('selectedSort');
 
-                            // Находим элементы select и input на странице
+                            // Find select and input elements on the page
                             let categorySelect = document.getElementById('category');
                             let languageSelect = document.getElementById('language');
                             let pubDateSelect = document.getElementById('pubDate');
                             let querySelect = document.getElementById('query');
                             let sortSelect = document.getElementById('sort');
 
-                            // Устанавливаем выбранные значения для каждого select и input
+                            // Set the selected values for each select and input
                             if (selectedCategory) { categorySelect.value = selectedCategory; }
                             if (selectedLanguage) { languageSelect.value = selectedLanguage; }
                             if (selectedPubDate) { pubDateSelect.value = selectedPubDate; }
                             if (selectedQuery) { querySelect.value = selectedQuery; }
                             if (selectedSort) { sortSelect.value = selectedSort; }
 
-                            // Получаем атрибут данных новостей
+                            // Get the attribute of news data
                             let newsData = JSON.parse(body.getAttribute("news-data") || "[]");
 
                             // Log these values to see if they are what we expect
@@ -337,8 +336,7 @@
                             console.log("Selected Query:", selectedQuery);
                             console.log("News Data:", newsData);
 
-                            // Проверяем, пусты ли выбранные категория, язык и дата публикации, а также данные новостей
-                            // условие на длину списка работает
+                            // if all are empty --> redirect to news
                             if (newsData.length.valueOf() == 0 && (selectedCategory === '' && selectedLanguage === '' && selectedPubDate === '' && selectedQuery ==='' && selectedSort ==='')) { // тут проблема в selectedCategory и selectedLanguage
                                 console.log("redirect to /news");
                                 window.location.href = '/news';

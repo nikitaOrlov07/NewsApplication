@@ -41,7 +41,7 @@ public class MainController{
     {
         NewsPagination news_list =  newsService.getAllNews(pageNo,pageSize);
         model.addAttribute("news", news_list);
-       /*
+
         if(SecurityUtil.getSessionUser() != null)
         {
             UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
@@ -49,7 +49,6 @@ public class MainController{
 
         }
 
-        */
         return "home-page";
     }
     //Detail page
