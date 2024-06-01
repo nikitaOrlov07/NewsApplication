@@ -8,6 +8,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Title</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <style>
         body {
             background-image: url("/assets/img/detailPage.jpg");
@@ -40,6 +41,9 @@
                <p><strong>Email:</strong> <span th:text="${user.email}"/></p>
                <p><strong>Town:</strong> <span th:if="${user.town} != null" th:text="(${user.town.trim()} != '' ? ${user.town} : 'undefined')"></span></p>
                <p><strong>Phone number:</strong> <span th:text="(${user.phoneNumber} != null ? ${user.phoneNumber} : 'undefined')"></span></p>
+            <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post">
+                <input type="submit" value="Delete" class="btn btn-primary">
+            </form>
         </div>
         <hr style="border: 2px solid #ccc; border-color: #032738">
         <h2  > Recently Seen News</h2>
@@ -77,9 +81,9 @@
                             <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
                             <br/><strong>Language :</strong> <span th:text="${news.language}"></span><br/>
                             <strong>Views: </strong><span th:text="${news.pageVisitingCount}"></span>
+                            <a style="position: absolute; bottom: 1px; left: 5px;" class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
                         </p>
                     </div>
-                    <a class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${news.id})}">Detail</a>
                 </div>
             </div>
         </div>
@@ -88,7 +92,7 @@
         <span th:if="${user.comments == null or #lists.isEmpty(user.comments)}" style="margin-left: 10px">There are no comments</span>
         <div th:if="${user.seenNews != null}" >
             <div th:each="comment, iterStat : ${user.comments}" th:if="${iterStat.index >= user.comments.size() - 5}">
-                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; position: relative; width: 1000px; background-color: #b0b0b0;">
+                <div class="comment" style="border: 1px solid #ccc; padding: 10px; margin-bottom: 10px; border-radius: 5px; position: relative; width: 1000px;height: 150px; background-color: #b0b0b0;">
                 <div style="display: flex; justify-content: space-between;">
                     <div>
                         <p class="comment-author" th:text="${comment.author}+':'" style="font-size: 1.2em; font-weight: bold; color: #000742;"></p>
@@ -98,47 +102,89 @@
                         <p class="comment-text" th:text="${comment.pubDate}" style="font-size: 1.2em; line-height: 1.5; color: #000000;"></p>
                         <strong>Likes: </strong><span th:text="${comment.likes}"></span>
                         <strong>Dislikes: </strong><span th:text="${comment.dislikes}"></span>
+                        <a style="position: absolute; bottom: 1px; left: 5px;" class="btn btn-primary" th:href="@{/news/{newsId}(newsId = ${comment.getNews().id})}">Detail</a>
+                        <form style="position: absolute; bottom: 1px; right: 5px;" th:action="@{/comments/{newsId}/delete/{commentId}(newsId = ${comment.getNews().id},commentId=${comment.id})}" method="post">
+                            <input type="submit" value="Delete" class="btn btn-primary">
+                        </form>
                     </div>
                 </div>
             </div>
-
+            </div>
         </div>
-            <div th:if="${user.hasAdminRole()}" style="margin-top: 10px">
-                <hr style="border: 2px solid #ccc; border-color: #032738">
-                <h2>List of users:</h2>
-                <form id ="searchForm" th:action ="@{/users/find}" class="form-inline my-2 my-lg-0 mb-3">
-                    <input id="query" name="query" class ="form-control mr-sm-2 mb-5" type="search" placeholder="username" aria-label="Search" style="width: 400px; height: 50px">
-                </form>
-                <div style="max-height: 1000px" class="overflow-x-scroll" th:if="${users != null and !users.isEmpty()}">
-                    <div class="row">
-                        <div th:each="user : ${users}" class="col-md-4 mb-3">
-                            <div class="card mx-2" style="width: 100%">
-                                <div class="card-body">
-                                    <h5 class="card-title" th:text="${user.username}"></h5>
-                                    <p class="card-text">
-                                        <strong>Id: </strong> <span th:text="${user.id}"></span><br/>
-                                        <strong>Email: </strong> <span th:text="${user.email}"></span><br/>
-                                        <strong>City: </strong> <span th:text="${user.town}"></span><br/>
-                                        <strong>Comments number: </strong> <span th:text="${user.comments.size()}"></span><br/>
-                                        <strong>Last Liked: </strong>
-                                        <span th:if="${user.likedNews.isEmpty()}">No liked news</span>
-                                        <a th:if="${!user.likedNews.isEmpty()}" th:href="@{/news/{newsId}(newsId = ${user.likedNews.get(user.likedNews.size() - 1).id})}" th:text="${user.likedNews.get(user.likedNews.size() - 1).title}"></a><br/>
-                                        <strong>Creation date: </strong> <span th:text="${user.creationDate}"></span><br/>
-                                    <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post">
-                                        <input type="submit" value="Delete" class="btn btn-primary" style="position: absolute; bottom: 0; right: 5px;">
-                                    </form>
 
-                                    </p>
-                                </div>
+
+        <div th:if="${user.hasAdminRole()}" style="margin-top: 10px">
+            <hr style="border: 2px solid #ccc; border-color: #032738">
+            <h2  style="margin-bottom: 20px">List of users:</h2>
+            <form id="searchForm" class="d-flex my-2 my-lg-0 mb-3">
+                <input id="query" name="query" class="form-control mr-sm-2 mb-5" type="search" placeholder="username" aria-label="Search" style="width: 400px; height: 50px">
+                <button type="button" id="searchButton" class="btn btn-primary" style="margin-left: 10px ; width: 100px ; height: 50px">Search</button>
+            </form>
+
+            <div id="userList" style="max-height: 1000px" class="overflow-x-auto"th:fragment="userList">
+
+                <div th:if="${users==null || #lists.isEmpty(users)}" class="alert alert-info">
+                    There are no users with this username
+                </div>
+
+                <div class="row" > <!--I use fragment to interact only with this part -->
+
+                    <div th:each="user : ${users}" class="col-md-4 mb-3" th:if="${users != null and !users.isEmpty()}">
+                        <div class="card mx-2" style="width: 100%">
+                            <div class="card-body">
+                                <h5 class="card-title" th:text="${user.username}"></h5>
+                                <p class="card-text">
+                                    <strong>Id: </strong> <span th:text="${user.id}"></span><br/>
+                                    <strong>Email: </strong> <span th:text="${user.email}"></span><br/>
+                                    <strong>City: </strong> <span th:text="${user.town}"></span><br/>
+                                    <strong>Comments number: </strong> <span th:text="${user.comments.size()}"></span><br/>
+                                    <strong>Last Liked: </strong>
+                                    <span th:if="${user.likedNews.isEmpty()}">No liked news</span>
+                                    <a th:if="${!user.likedNews.isEmpty()}" th:href="@{/news/{newsId}(newsId = ${user.likedNews.get(user.likedNews.size() - 1).id})}" th:text="${user.likedNews.get(user.likedNews.size() - 1).title}"></a><br/>
+                                    <strong>Creation date: </strong> <span th:text="${user.creationDate}"></span><br/>
+                                <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post">
+                                    <input type="submit" value="Delete" class="btn btn-primary" style="position: absolute; bottom: 0; right: 5px;">
+                                </form>
+                                </p>
                             </div>
                         </div>
+                        <script>
+                            $(document).ready(function() {
+                                // if we are inside the form and press ENTER --> the search button is triggered.
+                                $('#searchForm').on('submit', function(e) {
+                                    e.preventDefault();  // Cancel the default form submission behavior
+                                    $('#searchButton').click();  // call the search function
+                                });
+
+                                $('#searchButton').click(function() {
+                                    // if we have empty form --> go to "/cabinet"
+                                    let query = $('#query').val();
+                                    if (query.trim() === '') {
+                                        window.location.href = '/cabinet';
+                                    } else {
+                                        $.ajax({
+                                            url: 'users/find',
+                                            type: 'GET',
+                                            data: { query: query },
+                                            success: function(data) {
+                                                console.log('Success function called');
+                                                $('#userList').html(data);
+                                            },
+                                            error: function() {
+                                                alert('Error occurred during search');
+                                            }
+                                        });
+                                    }
+                                });
+                            });
+
+                        </script>
                     </div>
                 </div>
             </div>
         </div>
-
-
     </section>
-</div>
+
+
 </body>
 </html>

@@ -42,13 +42,6 @@ public class MainController{
         NewsPagination news_list =  newsService.getAllNews(pageNo,pageSize);
         model.addAttribute("news", news_list);
 
-        if(SecurityUtil.getSessionUser() != null)
-        {
-            UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
-            logger.info("Role is Admin : "+user.hasAdminRole());
-
-        }
-
         return "home-page";
     }
     //Detail page
@@ -129,9 +122,14 @@ public class MainController{
     }
     // User search (only for admin)
     @GetMapping("/users/find")
-    public String searchUser(@RequestParam(value="query",required = false) String query,Model model)
+    public String searchUser(@RequestParam(value="query",defaultValue = " ") String query,Model model)
     {
+        if(!userService.findByUsername(SecurityUtil.getSessionUser()).hasAdminRole())
+        {
+            return "redirect:/news";
+        }
         model.addAttribute("users",userService.searchUser(query));
-        return "personal-cabinet";
+        logger.info("search logic are working");
+        return "personal-cabinet :: userList"; // userList is a fragment
     }
 }

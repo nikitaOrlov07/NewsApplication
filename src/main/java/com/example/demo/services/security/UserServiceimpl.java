@@ -11,7 +11,7 @@ import com.example.demo.repository.NewsRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.security.RoleRepository;
 import com.example.demo.repository.security.UserRepository;
-
+import java.util.Iterator;
 import com.example.demo.services.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -74,8 +74,9 @@ public class UserServiceimpl implements UserService {
 
     @Override
     public UserEntity findByUsername(String username) {
-        return  userRepository.findByUsername(username);
+        return userRepository.findByUsername(username);
     }
+
     @Override
     public UserEntity findById(Long userId) {
         Optional<UserEntity> optionalUser = userRepository.findById(userId);
@@ -239,52 +240,60 @@ public class UserServiceimpl implements UserService {
     }
     @Override
     public void deleteUserById(Long userId) {
-       UserEntity user = findById(userId);
-        //---------------------------------------Comments---------------------------
+        UserEntity user = findById(userId);
+
+        // ---------------------------------------Comments---------------------------
         List<Comment> comments;
-         //All written comments
+
+        // All written comments
         comments = commentRepository.findAllByAuthor(user.getUsername());
-         for(Comment comment : comments)
-        {
-           commentService.deleteComment(comment,comment.getNews().getId());
+        for (Comment comment : comments) {
+            commentService.deleteComment(comment, comment.getNews().getId());
         }
-         //All liked comments
+
+        // All liked comments
         comments = user.getLikedComments();
-       for(Comment comment: comments)
-       {
-         comment.setLikes(comment.getLikes()-1);
-         user.getLikedComments().remove(comment);
-       }
-       //All disliked comments
-       comments = user.getDislikedComments();
-       for(Comment comment :comments)
-       {
-           comment.setDislikes(comment.getDislikes()-1);
-           user.getDislikedComments().remove(comment);
-       }
-       //---------------------------------------News---------------------------
-       List<News> news_list;
+        for (Iterator<Comment> iterator = comments.iterator(); iterator.hasNext();) {
+            Comment comment = iterator.next();
+            comment.setLikes(comment.getLikes() - 1);
+            iterator.remove();
+        }
+
+        // All disliked comments
+        comments = user.getDislikedComments();
+        for (Iterator<Comment> iterator = comments.iterator(); iterator.hasNext();) {
+            Comment comment = iterator.next();
+            comment.setDislikes(comment.getDislikes() - 1);
+            iterator.remove();
+        }
+
+        // ---------------------------------------News---------------------------
+        List<News> newsList;
 
         // All liked News
-        news_list= user.getLikedNews();
-        for(News news : news_list)
-        {
-            news.setLikes(news.getLikes()-1);
-            user.getLikedNews().remove(news);
+        newsList = user.getLikedNews();
+        for (Iterator<News> iterator = newsList.iterator(); iterator.hasNext();) {
+            News news = iterator.next();
+            news.setLikes(news.getLikes() - 1);
+            iterator.remove();
         }
-        // All disliked News
-        news_list= user.getDislikedNews();
-        for(News news : news_list)
-        {
-            news.setDislikes((news.getDislikes()-1));
-            user.getDislikedNews().remove(news);
-        }
-        // All seen News (with lambda expression)
-        user.getSeenNews().removeIf(news -> true);
 
+        // All disliked News
+        newsList = user.getDislikedNews();
+        for (Iterator<News> iterator = newsList.iterator(); iterator.hasNext();) {
+            News news = iterator.next();
+            news.setDislikes(news.getDislikes() - 1);
+            iterator.remove();
+        }
+        // if I don't use iterator --> ConcurrentModificationException error occurs
+
+        user.getSeenNews().clear();
+        logger.error("User delettion working");
         userRepository.deleteUserRole(user.getId());
         userRepository.delete(user);
     }
+
+
 
     @Override
     public List<UserEntity> searchUser(String query) {

@@ -46,9 +46,10 @@ public class SecurityConfig {
                         .requestMatchers(new AntPathRequestMatcher("/news/actions/{newsId}/comments/{commentId}")).permitAll()
                         .requestMatchers(new AntPathRequestMatcher("/comments/{newsId}/save")).permitAll()
 
-                        .requestMatchers(new AntPathRequestMatcher("/users/{userId}/delete")).hasAuthority("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/news/delete/{newsId}")).hasAuthority("ADMIN")
+                        .requestMatchers(new AntPathRequestMatcher("/users/delete/{userId}")).permitAll()
                         // nobody can delete ADMIN user (even ADMIN himself)
-                        .requestMatchers(new AntPathRequestMatcher("/users/2/delete")).denyAll()
+                        .requestMatchers(new AntPathRequestMatcher("/users/delete/1")).denyAll()
                         .anyRequest().authenticated()) //other URLs are only allowed authenticated users.
 
                 // Это указывает, что запросы к определенным URL-адресам должны быть разрешены для всех пользователей, включая анонимных.

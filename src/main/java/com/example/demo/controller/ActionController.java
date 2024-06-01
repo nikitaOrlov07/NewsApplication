@@ -167,7 +167,7 @@ public class ActionController {
     @GetMapping("/news/update/{newsId}")
     public String updateNews(Model model, @PathVariable("newsId") Long newsId) {
         String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
         {
             return "redirect:/news";
         }
@@ -179,7 +179,7 @@ public class ActionController {
     @PostMapping("/news/update/save")
     public String updateNews(@Valid @ModelAttribute("news") NewsDto newsDto) {
         String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
         {
             return "redirect:/news";
         }
@@ -192,7 +192,7 @@ public class ActionController {
     @GetMapping("/news/delete/{newsId}")
     public String deleteNews(@PathVariable("newsId") Long newsId) {
         String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
         {
             return "redirect:/news";
         }
@@ -204,8 +204,21 @@ public class ActionController {
     // Admin can delete user
     @PostMapping("/users/delete/{userId}")
     public String deleteUser(@PathVariable("userId") Long userId) {
-        userService.deleteUserById(userId);
-        return "redirect:/news";
+        String username = SecurityUtil.getSessionUser();
+        UserEntity user = userService.findByUsername(username);
+        UserEntity userToDelete = userService.findById(userId);
+        if(user.hasAdminRole())
+        {
+            userService.deleteUserById(userId);
+            return "redirect:/cabinet";
+        }
+        else if(userToDelete.equals(userToDelete))
+        {
+            userService.deleteUserById(userId);
+            return "redirect:/logout";
+        }
+        else
+            return "redirect:/news";
     }
 
 }
