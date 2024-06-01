@@ -74,7 +74,8 @@ public class NewsServiceimpl implements NewsService {
 
         // check for error with saving non-existed data that I got from Api
 
-       try {
+
+        /*try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
         }
 
@@ -82,6 +83,8 @@ public class NewsServiceimpl implements NewsService {
         {
           logger.error("problem with api response");
         }
+
+         */
 
 
 

@@ -21,7 +21,7 @@ public class NewsMapper {
         List<News> newsList = new ArrayList<>();
         for (ApiResponse response : responses) {
             for (Result result : response.getResult()) {
-                // Преобразование входящей строки даты и времени в LocalDateTime, затем в форматированную строку даты
+
                 LocalDateTime pubdateTime = LocalDateTime.parse(result.getPubdate(), INPUT_DATE_FORMATTER);
                 String formattedPubdate = pubdateTime.format(OUTPUT_DATE_FORMATTER);
 
@@ -30,7 +30,7 @@ public class NewsMapper {
                         .videoUrl(result.getVideoUrl())
                         .creator(result.getCreator())
                         .description(result.getDescription())
-                        .pubdate(formattedPubdate) // сохранение в формате yyyy-MM-dd
+                        .pubdate(formattedPubdate)
                         .country(result.getCountry())
                         .title(result.getTitle())
                         .category(result.getCategory())
@@ -48,8 +48,18 @@ public class NewsMapper {
                 .title(newsDto.getTitle())
                 .imageUrl(newsDto.getImageUrl())
                 .description(newsDto.getDescription())
-                .country(Collections.singletonList(newsDto.getCountry()))
+                .country(newsDto.getCountry()) // Collections.singletonList - create immutable list
                 .build();
         return news;
+    }
+    public static NewsDto getNewsDtoFromNews(News news) {
+        NewsDto newsDto = NewsDto.builder()
+                .id(news.getId())
+                .title(news.getTitle())
+                .imageUrl(news.getImageUrl())
+                .description(news.getDescription())
+                .country(news.getCountry())
+                .build();
+        return newsDto;
     }
 }

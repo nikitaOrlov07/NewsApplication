@@ -21,7 +21,8 @@ public class NewsDto {
     String title;
     String language;
     String pubdate;
+    List<String> category;
     @NotEmpty(message = "You must enter country")
-    String country;
+    List<String> country;
 
 }

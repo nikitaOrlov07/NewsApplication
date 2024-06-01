@@ -26,6 +26,7 @@ public class UserEntity {
     private String town;
     private Long phoneNumber;
     private int roleId; //{0,1}
+    String creationDate;
 
     @ToString.Exclude
     @ManyToMany(fetch = FetchType.EAGER , cascade = CascadeType.ALL)
@@ -88,5 +89,6 @@ public class UserEntity {
 
     @OneToMany(mappedBy = "user", fetch = FetchType.LAZY, cascade = CascadeType.ALL)  // one user --> many comments in comment side i have @ ManyToone annotation
     private List<Comment> comments = new ArrayList<>();
+
 
 }

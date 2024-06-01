@@ -142,9 +142,7 @@
                 </div>
                 <div th:if="${news != null}">
                     <div class="row" >
-                        <!-- Thymeleaf for each loop to iterate over news_list -->
-
-                        <div th:each="news : ${news.data}" class="col-lg-3"> <!-- Change this to col-md-3 for 4 cards in a row -->
+                        <div th:each="news : ${news.data}" class="col-lg-3">
                             <div class="card mb-4" style="overflow: auto">
                                 <div class="card-body" style="height: 400px;width: 300px;">
                                     <h5 class="card-title" th:text="${news.title}"></h5>
@@ -165,7 +163,6 @@
 
 
                     <!--Pagination-->
-
                     <th:block th:with="startPage=${news.pageNo > 5 ? news.pageNo - 5 : 0}"  th:if="${news != null && !#lists.isEmpty(news.data) }">
                         <nav aria-label="Pagination">
                             <ul class="pagination justify-content-center my-4">

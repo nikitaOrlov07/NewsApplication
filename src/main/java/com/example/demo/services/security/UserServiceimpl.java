@@ -11,12 +11,17 @@ import com.example.demo.repository.NewsRepository;
 import com.example.demo.repository.CommentRepository;
 import com.example.demo.repository.security.RoleRepository;
 import com.example.demo.repository.security.UserRepository;
+
+import com.example.demo.services.CommentService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
@@ -25,15 +30,18 @@ import java.util.Optional;
 public class UserServiceimpl implements UserService {
     private UserRepository userRepository; private RoleRepository roleRepository;  // implements methods from repositories
     private PasswordEncoder passwordEncoder; private NewsRepository newsRepository; private CommentRepository commentRepository;
+
+    private CommentService commentService;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceimpl.class);
 
     @Autowired
-    public UserServiceimpl(UserRepository userRepository, RoleRepository roleRepository,PasswordEncoder passwordEncoder, NewsRepository newsRepository, CommentRepository commentRepository) {
+    public UserServiceimpl(UserRepository userRepository, RoleRepository roleRepository,PasswordEncoder passwordEncoder, NewsRepository newsRepository, CommentRepository commentRepository,CommentService commentService) {
         this.userRepository = userRepository;
         this.roleRepository = roleRepository;
         this.passwordEncoder = passwordEncoder;
         this.newsRepository = newsRepository;
         this.commentRepository =commentRepository;
+        this.commentService = commentService;
     } // Technically we don`t need a constructor , but it is good practice
 
     @Override
@@ -45,6 +53,12 @@ public class UserServiceimpl implements UserService {
         userEntity.setPassword(passwordEncoder.encode(registrationDto.getPassword()));
         userEntity.setTown(registrationDto.getTown());
         userEntity.setPhoneNumber(registrationDto.getPhoneNumber());
+        //Creation date
+        LocalDate date = LocalDate.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd:MM:yyyy");
+
+
+        userEntity.setCreationDate(date.format(formatter));
 
         RoleEntity role = roleRepository.findByName("USER");// по факту "USER"  записывается в переменную role (- В этой строке мы ищем объект RoleEntity, представляющий роль "USER" в системе.)
         userEntity.setRoles(Arrays.asList(role));// даем нашему userEntity (юзеру) роль "USER" (мы назначаем найденную роль "USER" пользователю, устанавливая список ролей пользователя в качестве списка,
@@ -93,7 +107,6 @@ public class UserServiceimpl implements UserService {
     public List<UserEntity> findAllByDislikedComments(Comment comment) {
         return userRepository.findAllByDislikedComments(comment);
     }
-
     @Override
     public void actionNews(String action, News news, String type,Comment comment) {
         if(action != null && !action.isEmpty())
@@ -224,6 +237,58 @@ public class UserServiceimpl implements UserService {
     public List<UserEntity> findAllUsers() {
         return userRepository.findAll();
     }
+    @Override
+    public void deleteUserById(Long userId) {
+       UserEntity user = findById(userId);
+        //---------------------------------------Comments---------------------------
+        List<Comment> comments;
+         //All written comments
+        comments = commentRepository.findAllByAuthor(user.getUsername());
+         for(Comment comment : comments)
+        {
+           commentService.deleteComment(comment,comment.getNews().getId());
+        }
+         //All liked comments
+        comments = user.getLikedComments();
+       for(Comment comment: comments)
+       {
+         comment.setLikes(comment.getLikes()-1);
+         user.getLikedComments().remove(comment);
+       }
+       //All disliked comments
+       comments = user.getDislikedComments();
+       for(Comment comment :comments)
+       {
+           comment.setDislikes(comment.getDislikes()-1);
+           user.getDislikedComments().remove(comment);
+       }
+       //---------------------------------------News---------------------------
+       List<News> news_list;
 
+        // All liked News
+        news_list= user.getLikedNews();
+        for(News news : news_list)
+        {
+            news.setLikes(news.getLikes()-1);
+            user.getLikedNews().remove(news);
+        }
+        // All disliked News
+        news_list= user.getDislikedNews();
+        for(News news : news_list)
+        {
+            news.setDislikes((news.getDislikes()-1));
+            user.getDislikedNews().remove(news);
+        }
+        // All seen News (with lambda expression)
+        user.getSeenNews().removeIf(news -> true);
+
+        userRepository.deleteUserRole(user.getId());
+        userRepository.delete(user);
+    }
+
+    @Override
+    public List<UserEntity> searchUser(String query) {
+        return userRepository.searchUser(query);
+    }
 
 }

@@ -29,4 +29,8 @@ public interface UserService {
     List<UserEntity> findAllByLikedComments(Comment comment);
 
     List<UserEntity> findAllByDislikedComments(Comment comment);
+
+    void deleteUserById(Long userId);
+
+    List<UserEntity> searchUser(String query);
 }

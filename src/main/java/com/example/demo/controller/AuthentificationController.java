@@ -56,12 +56,12 @@ public class AuthentificationController {
             model.addAttribute("user", user);
             return "register";
         }
-
         RoleEntity adminRole = new RoleEntity();
         adminRole.setName("ADMIN");
         List<RoleEntity> roles = new ArrayList<>();
         roles.add(adminRole);
         user.setRoles(roles);
+
         userService.saveUser(user);
         return "redirect:/clubs?success";
     }

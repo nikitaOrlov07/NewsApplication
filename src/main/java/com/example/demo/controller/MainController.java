@@ -113,12 +113,25 @@ public class MainController{
     model.addAttribute("sort",sort);
     return "home-page";
 }
-  //user cabinet
+    // user cabinet (and list of all users (only for admin))
     @GetMapping("/cabinet")
     public String userCabinet(Model model)
     {
         UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
         model.addAttribute("user", user);
+        if(user.hasAdminRole())
+        {
+            List<UserEntity> users= userService.findAllUsers();
+            model.addAttribute("users",users);
+        }
+
+        return "personal-cabinet";
+    }
+    // User search (only for admin)
+    @GetMapping("/users/find")
+    public String searchUser(@RequestParam(value="query",required = false) String query,Model model)
+    {
+        model.addAttribute("users",userService.searchUser(query));
         return "personal-cabinet";
     }
 }

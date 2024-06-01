@@ -48,6 +48,10 @@
                             <span th:if="${#lists.isEmpty(news.creator)}">no specified</span>
                             <span th:each="creator : ${news.creator}" th:text="${creator}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
                         </h5>
+                        <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: #000000;"><strong>Countries:</strong>
+                            <span th:if="${#lists.isEmpty(news.country)}">no specified</span>
+                            <span th:each="country : ${news.country}" th:text="${country}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
+                        </h5>
                         <h5 class="card-title" style="font-family: 'Arial', sans-serif; color: #000000;"><strong>Categories:</strong>
                             <span th:if="${#lists.isEmpty(news.category)}">no specified</span>
                             <span th:each="category : ${news.category}" th:text="${category}+' '" style="font-family: 'Arial', sans-serif; color: #000000;"></span>
@@ -137,7 +141,7 @@
                 </div>
             </div>
         </div>
-
+        </div>
 
     </div>
 

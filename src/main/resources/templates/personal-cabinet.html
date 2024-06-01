@@ -28,12 +28,12 @@
             width: 300px;
             overflow: auto;
         }
+
     </style>
 </head>
 <body>
-<div class="content-container">
     <section layout:fragment="body" style="margin-left: 20px">
-        <div>
+        <div >
                <h2 style="color: black">Profil Information</h2>
                <p><strong>Id:</strong> <span th:text="${user.id}"/></p>
                <p><strong>Username:</strong> <span th:text="${user.username}"/></p>
@@ -101,8 +101,42 @@
                     </div>
                 </div>
             </div>
+
         </div>
+            <div th:if="${user.hasAdminRole()}" style="margin-top: 10px">
+                <hr style="border: 2px solid #ccc; border-color: #032738">
+                <h2>List of users:</h2>
+                <form id ="searchForm" th:action ="@{/users/find}" class="form-inline my-2 my-lg-0 mb-3">
+                    <input id="query" name="query" class ="form-control mr-sm-2 mb-5" type="search" placeholder="username" aria-label="Search" style="width: 400px; height: 50px">
+                </form>
+                <div style="max-height: 1000px" class="overflow-x-scroll" th:if="${users != null and !users.isEmpty()}">
+                    <div class="row">
+                        <div th:each="user : ${users}" class="col-md-4 mb-3">
+                            <div class="card mx-2" style="width: 100%">
+                                <div class="card-body">
+                                    <h5 class="card-title" th:text="${user.username}"></h5>
+                                    <p class="card-text">
+                                        <strong>Id: </strong> <span th:text="${user.id}"></span><br/>
+                                        <strong>Email: </strong> <span th:text="${user.email}"></span><br/>
+                                        <strong>City: </strong> <span th:text="${user.town}"></span><br/>
+                                        <strong>Comments number: </strong> <span th:text="${user.comments.size()}"></span><br/>
+                                        <strong>Last Liked: </strong>
+                                        <span th:if="${user.likedNews.isEmpty()}">No liked news</span>
+                                        <a th:if="${!user.likedNews.isEmpty()}" th:href="@{/news/{newsId}(newsId = ${user.likedNews.get(user.likedNews.size() - 1).id})}" th:text="${user.likedNews.get(user.likedNews.size() - 1).title}"></a><br/>
+                                        <strong>Creation date: </strong> <span th:text="${user.creationDate}"></span><br/>
+                                    <form th:action="@{/users/delete/{id}(id=${user.id})}" method="post">
+                                        <input type="submit" value="Delete" class="btn btn-primary" style="position: absolute; bottom: 0; right: 5px;">
+                                    </form>
+
+                                    </p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
         </div>
+
 
     </section>
 </div>
