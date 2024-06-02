@@ -6,7 +6,7 @@ import java.util.List;
 import java.util.Optional;
 
 public interface CommentService {
-    void saveComment(Comment comment,Long newsId);
+    Comment saveComment(Comment comment,Long newsId);
 
     List<Comment> getComments(Long newsId);
 

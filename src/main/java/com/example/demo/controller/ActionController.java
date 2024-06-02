@@ -151,14 +151,7 @@ public class ActionController {
             model.addAttribute("news", newsDto);
             return "create-news";
         }
-
-        // For current date time
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        String formattedDateTime = currentDateTime.format(formatter);
-        newsDto.setPubdate(formattedDateTime.toString());
-        newsService.updateNews(NewsMapper.getNewsFromDto(newsDto));
+        newsService.createNews(newsDto);
 
         return "redirect:/news";
     }

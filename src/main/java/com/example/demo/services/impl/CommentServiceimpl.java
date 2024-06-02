@@ -24,21 +24,21 @@ public class CommentServiceimpl implements CommentService {
     private UserService userService;
 
 
-    public void saveComment(Comment comment,Long newsId) {
+    public Comment saveComment(Comment comment,Long newsId) {
 
-       UserEntity user =userService.findByUsername(SecurityUtil.getSessionUser());
+        UserEntity user =userService.findByUsername(SecurityUtil.getSessionUser());
         News news = newsService.getNewsById(newsId);
         comment.setNews(news);
         news.setCommentsCount(news.getCommentsCount() + 1);
 
         comment.setAuthor(user.getUsername());
         newsService.updateNews(news);
-        commentRepository.save(comment);
+        return  commentRepository.save(comment);
     }
 
     @Override
-    public List<Comment> getComments(Long commentId) {
-        return commentRepository.findCommentByNewsId(commentId);
+    public List<Comment> getComments(Long newsId) {
+        return commentRepository.findCommentByNewsId(newsId);
     }
 
     @Override

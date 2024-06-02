@@ -1,6 +1,7 @@
 package com.example.demo.services.security;
 
 
+import com.example.demo.DTO.NewsDto;
 import com.example.demo.DTO.security.RegistrationDto;
 import com.example.demo.models.Comment;
 import com.example.demo.models.News;
@@ -33,4 +34,12 @@ public interface UserService {
     void deleteUserById(Long userId);
 
     List<UserEntity> searchUser(String query);
+
+    List<UserEntity> findAllBySeenNews(News news);
+
+    List<UserEntity> findAllByLikedNews(News news);
+
+    List<UserEntity> findAllByDislikedNews(News news);
+
+    List<UserEntity> findAllByComments(List<Comment> list);
 }

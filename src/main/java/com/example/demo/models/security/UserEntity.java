@@ -3,16 +3,14 @@ package com.example.demo.models.security;
 
 import com.example.demo.models.Comment;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import com.example.demo.models.News;
-import lombok.ToString;
 
 import java.util.ArrayList;
 import java.util.List;
 
 @Data
+@Builder
 @AllArgsConstructor
 @NoArgsConstructor
 @Entity(name="users")

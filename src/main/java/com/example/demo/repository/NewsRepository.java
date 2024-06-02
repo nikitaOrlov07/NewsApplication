@@ -1,15 +1,12 @@
 package com.example.demo.repository;
 
 
-import com.example.demo.models.Comment;
 import com.example.demo.models.News;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.sql.Date;
-import java.util.List;
 import java.util.Optional;
 
 public interface NewsRepository extends JpaRepository<News,Long> {
@@ -33,6 +30,7 @@ public interface NewsRepository extends JpaRepository<News,Long> {
      Page<News> findAllByOrderByPageVisitingCountDesc(Pageable pageable); //desc = descending sort = "по убыванию"
      Page<News> findAllByOrderByLikesDesc(Pageable pageable);
      Page<News> findAllByOrderByCommentsCountDesc(Pageable pageable);
+
 
 }
 

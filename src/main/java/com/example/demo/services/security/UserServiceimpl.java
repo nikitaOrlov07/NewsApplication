@@ -29,9 +29,7 @@ import java.util.Optional;
 @Service
 public class UserServiceimpl implements UserService {
     private UserRepository userRepository; private RoleRepository roleRepository;  // implements methods from repositories
-    private PasswordEncoder passwordEncoder; private NewsRepository newsRepository; private CommentRepository commentRepository;
-
-    private CommentService commentService;
+    private PasswordEncoder passwordEncoder; private NewsRepository newsRepository; private CommentRepository commentRepository; private CommentService commentService;
     private static final Logger logger = LoggerFactory.getLogger(UserServiceimpl.class);
 
     @Autowired
@@ -298,6 +296,26 @@ public class UserServiceimpl implements UserService {
     @Override
     public List<UserEntity> searchUser(String query) {
         return userRepository.searchUser(query);
+    }
+
+    @Override
+    public List<UserEntity> findAllBySeenNews(News news) {
+        return userRepository.findAllBySeenNews(news);
+    }
+
+    @Override
+    public List<UserEntity> findAllByLikedNews(News news) {
+        return userRepository.findAllByLikedNews(news);
+    }
+
+    @Override
+    public List<UserEntity> findAllByDislikedNews(News news) {
+        return userRepository.findAllByDislikedNews(news);
+    }
+
+    @Override
+    public List<UserEntity> findAllByComments(List<Comment> list) {
+        return userRepository.findAllByComments(list);
     }
 
 }

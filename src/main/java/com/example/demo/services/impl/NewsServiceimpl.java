@@ -1,6 +1,7 @@
 package com.example.demo.services.impl;
 
 import com.example.demo.DTO.ApiResponse;
+import com.example.demo.DTO.NewsDto;
 import com.example.demo.DTO.NewsPagination;
 import com.example.demo.mappers.NewsMapper;
 import com.example.demo.models.Comment;
@@ -24,20 +25,25 @@ import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Flux;
 
 import java.sql.Date;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
 @Service
 public class NewsServiceimpl implements NewsService {
+
+    private NewsRepository newsRepository; private CommentService commentService;
+    private UserService userService;
+
     @Autowired
-    NewsRepository newsRepository;
-    @Autowired
-    CommentService commentService;
-    @Autowired
-    UserService userService;
-    @Autowired
-    UserRepository userRepository;
+    public NewsServiceimpl(NewsRepository newsRepository, CommentService commentService, UserService userService) {
+        this.newsRepository = newsRepository;
+        this.commentService = commentService;
+        this.userService = userService;
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(NewsServiceimpl.class);
     @Override
     public List<ApiResponse> getNewsFromApi() {
@@ -53,7 +59,7 @@ public class NewsServiceimpl implements NewsService {
 
     @Override
     public News getNewsById(long id) {
-        return newsRepository.findById(id).get();
+        return newsRepository.findById(id).orElse(null);
     }
 
     // method for saving non-existed news from Api
@@ -176,29 +182,29 @@ public class NewsServiceimpl implements NewsService {
     }
 
     @Override
-    public void updateNews(News news) {
-        newsRepository.save(news);
+    public News updateNews(News news) {
+        return newsRepository.save(news);
     }
 
     @Override
     public void deleteNews(News news) {
 
             // for seen News
-            List<UserEntity> users = userRepository.findAllBySeenNews(news);
+            List<UserEntity> users = userService.findAllBySeenNews(news);
             if(users != null && !users.isEmpty()) {
                 for (UserEntity user : users) {
                     user.getSeenNews().remove(news);
                 }
             }
             // for liked news
-            users = userRepository.findAllByLikedNews(news);
+            users = userService.findAllByLikedNews(news);
             if(users != null && !users.isEmpty()) {
             for (UserEntity user : users) {
                 user.getLikedNews().remove(news);
                  }
             }
             // for disliked news
-            users =userRepository.findAllByDislikedNews(news);
+            users =userService.findAllByDislikedNews(news);
             if(users != null && !users.isEmpty()) {
             for (UserEntity user : users) {
                 user.getLikedNews().remove(news);
@@ -228,7 +234,7 @@ public class NewsServiceimpl implements NewsService {
                 }
 
                 // Remove comment from all users comments lists
-                List<UserEntity> usersWithComment = userRepository.findAllByComments(Arrays.asList(comment));
+                List<UserEntity> usersWithComment = userService.findAllByComments(Arrays.asList(comment));
                 if(usersWithComment != null && !usersWithComment.isEmpty()) {
                     for (UserEntity user : usersWithComment) {
                         user.getComments().remove(comment);
@@ -238,11 +244,21 @@ public class NewsServiceimpl implements NewsService {
                 commentService.deleteComment(comment, news.getId());
             }
         }
-
-
-        newsRepository.delete(news);
+         newsRepository.delete(news);
     }
 
+    @Override
+    public NewsDto createNews(NewsDto newsDto) {
+        // For current date time
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
+        String formattedDateTime = currentDateTime.format(formatter);
+        newsDto.setPubdate(formattedDateTime.toString());
+        updateNews(NewsMapper.getNewsFromDto(newsDto));
+        return newsDto; // for test
     }
+
+}
 
 
