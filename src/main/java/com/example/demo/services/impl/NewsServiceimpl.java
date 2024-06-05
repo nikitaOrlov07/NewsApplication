@@ -34,8 +34,7 @@ import java.util.List;
 @Service
 public class NewsServiceimpl implements NewsService {
 
-    private NewsRepository newsRepository; private CommentService commentService;
-    private UserService userService;
+    private NewsRepository newsRepository; private CommentService commentService; private UserService userService;
 
     @Autowired
     public NewsServiceimpl(NewsRepository newsRepository, CommentService commentService, UserService userService) {
@@ -91,12 +90,6 @@ public class NewsServiceimpl implements NewsService {
         }
 
          */
-
-
-
-
-
-
 
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);
@@ -180,12 +173,19 @@ public class NewsServiceimpl implements NewsService {
         newsPagination.setLast(news.isLast());
         return newsPagination;
     }
+    private String getCurrentTime()
+    {
+        LocalDateTime currentDateTime = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
+        String formattedDateTime = currentDateTime.format(formatter);
+        return  formattedDateTime;
+    }
     @Override
     public News updateNews(News news) {
-        return newsRepository.save(news);
-    }
-
+        System.out.println();
+        news.setPubdate(getCurrentTime());
+        return newsRepository.save(news);}
     @Override
     public void deleteNews(News news) {
 
@@ -248,15 +248,7 @@ public class NewsServiceimpl implements NewsService {
     }
 
     @Override
-    public NewsDto createNews(NewsDto newsDto) {
-        // For current date time
-        LocalDateTime currentDateTime = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
-
-        String formattedDateTime = currentDateTime.format(formatter);
-        newsDto.setPubdate(formattedDateTime.toString());
-        updateNews(NewsMapper.getNewsFromDto(newsDto));
-        return newsDto; // for test
+    public News createNews(NewsDto newsDto) { newsDto.setPubdate(getCurrentTime()); return newsRepository.save(NewsMapper.getNewsFromDto(newsDto)); // for test
     }
 
 }

@@ -21,5 +21,5 @@ public interface NewsService {
 
     void deleteNews(News news);
 
-    NewsDto createNews(NewsDto newsDto);
+    News createNews(NewsDto newsDto);
 }

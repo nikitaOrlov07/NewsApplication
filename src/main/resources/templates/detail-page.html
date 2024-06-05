@@ -66,10 +66,14 @@
                             <button name="interaction" value="like" type="submit" style="width: 50px; height: 50px;">👍</button>
                             <button name="interaction" value="dislike" type="submit" style="width: 50px; height: 50px;">👎</button>
                         </form>
-                        <div th:if="${user!=null and user.hasAdminRole()}" style="margin-top: 10px">
+                        <div th:if="${user!=null and user.hasAdminRole()}" style="margin-top: 10px; display: flex;">
                             <a class="btn btn-primary" th:href="@{/news/update/{newsId}(newsId = ${news.id})}"> Update news</a>
-                            <a class="btn btn-primary" th:href="@{/news/delete/{newsId}(newsId = ${news.id})}"> Delete news</a>
+                            <form  style="margin-left: 5px" method="post" th:action="@{/news/delete/{newsId}(newsId = ${news.id})}">
+                                <button class="btn btn-primary"> Delete news</button>
+                            </form>
                         </div>
+
+
                     </div>
                 </div>
             </div>

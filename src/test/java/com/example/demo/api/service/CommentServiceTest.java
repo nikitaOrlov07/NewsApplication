@@ -33,8 +33,7 @@ public class CommentServiceTest {
     private CommentRepository commentRepository;
     @Mock
     private NewsService newsService;
-    @Mock
-    private NewsRepository newsRepository;
+
     @Mock
     private UserService userService;
     @InjectMocks

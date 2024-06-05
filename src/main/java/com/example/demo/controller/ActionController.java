@@ -19,6 +19,7 @@ import com.example.demo.models.News;
 import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @Controller
 public class ActionController {
@@ -126,74 +127,6 @@ public class ActionController {
 
         return "redirect:/news/" + newsId; // redirect to news detail page)
     }
-
-    // Admin can create news
-    @GetMapping("/news/create")
-    public String addNews(Model model) {
-        String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
-        {
-            return "redirect:/news";
-        }
-        NewsDto news = new NewsDto();
-        model.addAttribute("news", news);
-        return "create-news";
-    }
-
-    @PostMapping("/news/create/save")
-    public String addNews(@Valid @ModelAttribute("news") NewsDto newsDto, BindingResult result, Model model) {
-        String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
-        {
-            return "redirect:/news";
-        }
-        if (result.hasErrors()) {
-            model.addAttribute("news", newsDto);
-            return "create-news";
-        }
-        newsService.createNews(newsDto);
-
-        return "redirect:/news";
-    }
-
-    // Admin can update news
-    @GetMapping("/news/update/{newsId}")
-    public String updateNews(Model model, @PathVariable("newsId") Long newsId) {
-        String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
-        {
-            return "redirect:/news";
-        }
-        NewsDto news = NewsMapper.getNewsDtoFromNews(newsService.getNewsById(newsId));
-        model.addAttribute("news", news);
-        return "update-news";
-    }
-
-    @PostMapping("/news/update/save")
-    public String updateNews(@Valid @ModelAttribute("news") NewsDto newsDto) {
-        String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
-        {
-            return "redirect:/news";
-        }
-
-        newsService.updateNews(NewsMapper.getNewsFromDto(newsDto));
-        return "redirect:/news/" + newsDto.getId();
-    }
-
-    // Admin can delete news
-    @GetMapping("/news/delete/{newsId}")
-    public String deleteNews(@PathVariable("newsId") Long newsId) {
-        String username = SecurityUtil.getSessionUser();
-        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
-        {
-            return "redirect:/news";
-        }
-        News news = newsService.getNewsById(newsId);
-        newsService.deleteNews(news);
-        return "redirect:/news";
-    }
-
     // Admin can delete user
     @PostMapping("/users/delete/{userId}")
     public String deleteUser(@PathVariable("userId") Long userId) {
@@ -213,5 +146,30 @@ public class ActionController {
         else
             return "redirect:/news";
     }
+    // user cabinet (and list of all users (only for admin))
+    @GetMapping("/cabinet")
+    public String userCabinet(Model model)
+    {
+        UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
+        model.addAttribute("user", user);
+        if(user.hasAdminRole())
+        {
+            List<UserEntity> users= userService.findAllUsers();
+            model.addAttribute("users",users);
+        }
 
+        return "personal-cabinet";
+    }
+    // User search (only for admin)
+    @GetMapping("/users/find")
+    public String searchUser(@RequestParam(value="query",defaultValue = " ") String query,Model model)
+    {
+        if(!userService.findByUsername(SecurityUtil.getSessionUser()).hasAdminRole())
+        {
+            return "redirect:/news";
+        }
+        model.addAttribute("users",userService.searchUser(query));
+        logger.info("search logic are working");
+        return "personal-cabinet :: userList"; // userList is a fragment
+    }
 }

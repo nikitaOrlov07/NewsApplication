@@ -2,6 +2,7 @@ package com.example.demo.api.service;
 
 import com.example.demo.DTO.NewsDto;
 import com.example.demo.DTO.NewsPagination;
+import com.example.demo.mappers.NewsMapper;
 import com.example.demo.models.News;
 import com.example.demo.repository.NewsRepository;
 import com.example.demo.repository.security.UserRepository;
@@ -61,10 +62,9 @@ public class NewsServiceTest {
         when(newsRepository.save(Mockito.any(News.class))).thenReturn(news); // When the save method of the newsRepository mock object is called with any object of the News class as an argument, return the news object I just created
 
         // Act
-        NewsDto savedNews= newsService.createNews(newsDto); // in service method i use mapper and save News object into database
+        News savedNews= newsService.createNews(newsDto); // in service method i use mapper and save News object into database
         // Assert
         Assertions.assertNotNull(savedNews);
-        Assertions.assertEquals(newsDto, savedNews, "Must be equals objects");
     }
     @Test
     public void NewsService_GetAll_ReturnNews()

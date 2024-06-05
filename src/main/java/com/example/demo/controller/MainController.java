@@ -1,5 +1,6 @@
 package com.example.demo.controller;
 import com.example.demo.DTO.ApiResponse;
+import com.example.demo.DTO.NewsDto;
 import com.example.demo.DTO.NewsPagination;
 import com.example.demo.mappers.NewsMapper;
 import com.example.demo.models.Comment;
@@ -11,12 +12,15 @@ import com.example.demo.services.CommentService;
 import com.example.demo.services.NewsService;
 import com.example.demo.services.impl.NewsServiceimpl;
 import com.example.demo.services.security.UserService;
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.Date;
@@ -106,30 +110,70 @@ public class MainController{
     model.addAttribute("sort",sort);
     return "home-page";
 }
-    // user cabinet (and list of all users (only for admin))
-    @GetMapping("/cabinet")
-    public String userCabinet(Model model)
-    {
-        UserEntity user = userService.findByUsername(SecurityUtil.getSessionUser());
-        model.addAttribute("user", user);
-        if(user.hasAdminRole())
-        {
-            List<UserEntity> users= userService.findAllUsers();
-            model.addAttribute("users",users);
-        }
-
-        return "personal-cabinet";
-    }
-    // User search (only for admin)
-    @GetMapping("/users/find")
-    public String searchUser(@RequestParam(value="query",defaultValue = " ") String query,Model model)
-    {
-        if(!userService.findByUsername(SecurityUtil.getSessionUser()).hasAdminRole())
+    // Admin can create news
+    @GetMapping("/news/create")
+    public String addNews(Model model) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
         {
             return "redirect:/news";
         }
-        model.addAttribute("users",userService.searchUser(query));
-        logger.info("search logic are working");
-        return "personal-cabinet :: userList"; // userList is a fragment
+        NewsDto news = new NewsDto();
+        model.addAttribute("news", news);
+        return "create-news";
+    }
+
+    @PostMapping("/news/create/save")
+    public String addNews(@Valid @ModelAttribute("news") NewsDto newsDto, BindingResult result, Model model) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized
+        {
+            return "redirect:/news";
+        }
+        if (result.hasErrors()) {
+            model.addAttribute("news", newsDto);
+            return "create-news";
+        }
+        newsService.createNews(newsDto);
+
+        return "redirect:/news";
+    }
+
+    // Admin can update news
+    @GetMapping("/news/update/{newsId}")
+    public String updateNews(Model model, @PathVariable("newsId") Long newsId) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
+        {
+            return "redirect:/news";
+        }
+        NewsDto news = NewsMapper.getNewsDtoFromNews(newsService.getNewsById(newsId));
+        model.addAttribute("news", news);
+        return "update-news";
+    }
+
+
+    @PostMapping(value = "/news/update/save", consumes = MediaType.APPLICATION_JSON_VALUE)
+    public String updateNews(@Valid @RequestBody NewsDto newsDto) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
+        {
+            return "redirect:/news";
+        }
+        newsService.updateNews(NewsMapper.getNewsFromDto(newsDto));
+        return "redirect:/news/" + newsDto.getId();
+    }
+
+    // Admin can delete news
+    @PostMapping ("/news/delete/{newsId}")
+    public String deleteNews(@PathVariable("newsId") Long newsId) {
+        String username = SecurityUtil.getSessionUser();
+        if (username == null || !userService.findByUsername(username).hasAdminRole()) // if the user is not authorized and don`t have admin role
+        {
+            return "redirect:/news";
+        }
+        News news = newsService.getNewsById(newsId);
+        newsService.deleteNews(news);
+        return "redirect:/news";
     }
 }

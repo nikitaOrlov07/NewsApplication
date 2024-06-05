@@ -34,6 +34,9 @@ public class UserEntity {
     )// с помощью этой аннотации Spring сам создаст Join- таблицу
     private List<RoleEntity> roles = new ArrayList<>(); // список ролей для данного пользователя. Каждый пользователь может иметь список ролей.
     public boolean hasAdminRole() {
+        if (roles == null) {
+            return false;
+        }
         for (RoleEntity role : roles) {
             if (role.getName().equals("ADMIN")) {
                 return true;
