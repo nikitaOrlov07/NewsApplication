@@ -1,4 +1,4 @@
-News Application (Spring Application)
+News Application (SpringBoot Application)
 
 # Features for Non-Authenticated Users
 
