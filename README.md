@@ -31,5 +31,6 @@ In addition to the features for non-authenticated users, authenticated users can
 - The project is primarily written in Java, i also used HTML, CSS, and JavaScript for the front-end
 - Page navigation logic for selecting news articles is primarily implemented in JavaScript
 - JUnit and Mockito tests are included
+- Also i used PostgreSQL database for this project.
 
 Enjoy exploring the project!
