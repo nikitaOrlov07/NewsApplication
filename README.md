@@ -1,4 +1,4 @@
-News Application
+News Application (Spring Application)
 
 # Features for Non-Authenticated Users
 
