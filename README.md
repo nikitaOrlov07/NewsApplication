@@ -35,14 +35,3 @@ In addition to the features for non-authenticated users, authenticated users can
 
 Enjoy exploring the project!
 
-# Some photos
-- Main page
-![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/81f473b3-2cb1-4d96-b562-4dcd3893c796)
-
-- detail page 
-
-![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/de81b3f1-5fd3-4d7f-858e-845bafc457cf)
-
-- cabinet
-
-![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/7b59470a-2d17-484c-888d-940383b13a4c)
