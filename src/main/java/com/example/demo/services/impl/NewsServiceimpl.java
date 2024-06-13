@@ -207,7 +207,7 @@ public class NewsServiceimpl implements NewsService {
             users =userService.findAllByDislikedNews(news);
             if(users != null && !users.isEmpty()) {
             for (UserEntity user : users) {
-                user.getLikedNews().remove(news);
+                user.getDislikedNews().remove(news);
                }
             }
 

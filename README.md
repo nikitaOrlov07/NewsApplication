@@ -34,4 +34,3 @@ In addition to the features for non-authenticated users, authenticated users can
 - Also i used PostgreSQL database for this project.
 
 Enjoy exploring the project!
-
