@@ -39,7 +39,7 @@ Enjoy exploring the project!
 - Main page
 ![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/81f473b3-2cb1-4d96-b562-4dcd3893c796)
 
--detail page 
+- detail page 
 
 ![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/de81b3f1-5fd3-4d7f-858e-845bafc457cf)
 
