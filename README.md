@@ -34,3 +34,7 @@ In addition to the features for non-authenticated users, authenticated users can
 - Also i used PostgreSQL database for this project.
 
 Enjoy exploring the project!
+
+# Some photos
+- Main page
+![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/81f473b3-2cb1-4d96-b562-4dcd3893c796)
