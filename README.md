@@ -46,5 +46,12 @@ In addition to the features for non-authenticated users, authenticated users can
 ![User Cabinet](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/384824a2-18e0-4d6d-a0b4-9e7adf73ced8)
 *Track your reading habits and manage your profile.*
 
+### Login and Register pages 
+![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/372ce1aa-c4a1-4a47-86d0-0c43a140e4c3)
+*you can log in or create a new account. * 
+
+### ADMIN can delete , create and update news
+![image](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/c1144014-38c3-4ea5-a4ce-b6865908a135)
+
 
 Enjoy exploring the project!
