@@ -32,5 +32,19 @@ In addition to the features for non-authenticated users, authenticated users can
 - Page navigation logic for selecting news articles is primarily implemented in JavaScript
 - JUnit and Mockito tests are included
 - Also i used PostgreSQL database for this project.
+## Screenshots
+
+### Main Page
+![Main Page](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/bc8287af-146a-4a41-82c8-e797d46194c7)
+*Browse the latest news articles with easy search and navigation.*
+
+### Article Detail Page
+![Detail Page](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/37fc0287-fb7c-448b-a1c4-0ec78b693590)
+*Read full articles with rich content and images.*
+
+### User Cabinet
+![User Cabinet](https://github.com/nikitaOrlov07/NewsApplication/assets/145924436/384824a2-18e0-4d6d-a0b4-9e7adf73ced8)
+*Track your reading habits and manage your profile.*
+
 
 Enjoy exploring the project!
