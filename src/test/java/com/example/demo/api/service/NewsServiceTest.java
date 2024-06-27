@@ -4,6 +4,7 @@ import com.example.demo.DTO.NewsDto;
 import com.example.demo.DTO.NewsPagination;
 import com.example.demo.mappers.NewsMapper;
 import com.example.demo.models.News;
+import com.example.demo.models.security.UserEntity;
 import com.example.demo.repository.NewsRepository;
 import com.example.demo.repository.security.UserRepository;
 import com.example.demo.services.CommentService;
@@ -21,6 +22,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import com.example.demo.services.security.UserServiceimpl;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Optional;
 
@@ -36,6 +38,8 @@ public class NewsServiceTest {
     private UserService userService;
     @Mock
     private CommentService commentService;
+    @Mock
+    private UserRepository userRepository;
     @InjectMocks
     private NewsServiceimpl newsService; //  @InjectMocks creates an instance of the NewsServiceimpl class and automatically injects into it all mock objects that were declared in the same test class and are of a matching type
 
@@ -143,10 +147,15 @@ public class NewsServiceTest {
                 .description("Successfull test")
                 .pubdate("2015-22-07")
                 .build();
-
-        when(newsRepository.findById(1L)).thenReturn(Optional.ofNullable(news));
-        News returnedNews = newsRepository.findById(1L).get();
-        returnedNews.setDescription("Changed description");
+        newsRepository.save(news);
+        UserEntity user = UserEntity.builder()
+                .username("username")
+                .seenNews(Arrays.asList(news))
+                .likedNews(Arrays.asList(news))
+                .dislikedNews(new ArrayList<>())
+                .email("email")
+                .build();
+       userRepository.save(user);
 
         // Assert
         Assertions.assertAll(() -> newsService.deleteNews(news));
