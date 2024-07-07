@@ -16,6 +16,7 @@ import com.example.demo.services.security.UserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
@@ -34,6 +35,8 @@ import java.util.List;
 @Service
 public class NewsServiceimpl implements NewsService {
 
+    @Value("#{@base64DecodeConverter.convert('${api.key}')}") // decrypt key value from application.properties file
+    String url ;
     private NewsRepository newsRepository; private CommentService commentService; private UserService userService;
 
     @Autowired
@@ -46,7 +49,6 @@ public class NewsServiceimpl implements NewsService {
     private static final Logger logger = LoggerFactory.getLogger(NewsServiceimpl.class);
     @Override
     public List<ApiResponse> getNewsFromApi() {
-        String url = "https://newsdata.io/api/1/news?apikey=pub_416437263d95d7cebaaae9cac7ade7143a7e1";
 
         WebClient.Builder builder = WebClient.builder();
         Flux<ApiResponse> responseFlux = builder.build()
@@ -80,8 +82,9 @@ public class NewsServiceimpl implements NewsService {
         // check for error with saving non-existed data that I got from Api
 
 
-        /*try {
+        try {
             saveIfNotExists(NewsMapper.apiResponseToNews(getNewsFromApi()));
+            logger.info("News list are updated");
         }
 
         catch (Exception e)
@@ -89,7 +92,7 @@ public class NewsServiceimpl implements NewsService {
           logger.error("problem with api response");
         }
 
-         */
+
 
         Pageable pageable = PageRequest.of(pageNo,pageSize); // define information about pagination
         Page<News> news=newsRepository.findAll(pageable);
